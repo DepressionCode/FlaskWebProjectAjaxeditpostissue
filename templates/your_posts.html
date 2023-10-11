@@ -59,31 +59,36 @@
                 <div class="row">
                     <!-- Image and Info column -->
                     <div class="col-12">
+                        <!-- Display profile picture -->
                         {% if post["user_avatar"] == "" %}
                         <img class="pfp" src="{{ url_for('default_image') }}" alt="Default Image">
                         {% else %}
-                        <img class="pfp" src="/static/Images/{{post["user_avatar"]}}" />
+                        <img class="pfp" src="/static/Images/{{post["user_avatar"]}}" alt="User Avatar">
                         {% endif %}
-
+                    
+                        <!-- Display post info -->
                         <div class="info_posts">
                             <div class="row">
+                                <!-- Display username -->
                                 <div class="col-6 ellipsis-label">Username:</div>
                                 <div class="col-6 ellipsis">{{ post['user_name'] }}</div>
                             </div>
                             {% if post['date'] %}
                             <div class="row">
+                                <!-- Display time posted -->
                                 <div class="col-6 ellipsis-label">Time Posted:</div>
                                 <div class="col-6 ellipsis">{{ post['date'] }}</div>
                             </div>
                             {% endif %}
                             {% if post['date_edited'] %}
-                            <div class="row">
+                            <div class="row" id="old-date-edited">
+                                <!-- Display time edited -->
                                 <div class="col-6 ellipsis-label">Time Edit:</div>
                                 <div class="col-6 ellipsis">{{ post['date_edited'] }}</div>
                             </div>
                             {% endif %}
                         </div>
-                    </div>
+                    </div>                    
                 </div>
             </div>
             <hr class="responsive-divider">   
@@ -93,7 +98,7 @@
                     <p class="post_text" id="post-brag-{{post['board_id']}}">{{post['brag']}}</p>
 
                     {% if post['image']|length > 1 %}
-                    <div class="carousel-container">  
+                    <div class="carousel-container" id="carousel-inner-{{post['board_id']}}">  
                         <!-- Carousel main container -->
                         <div id="post_carousel-{{ loop.index }}" class="carousel slide" data-bs-ride="carousel">
                             <!-- Progress bar -->
@@ -102,7 +107,7 @@
                             </div>                       
                     
                             <!-- Carousel items -->
-                            <div class="carousel-inner" id="carousel-inner-{{post['board_id']}}">
+                            <div class="carousel-inner">
                                 {% for image_filename in post['image'] %}
                                     <div class="carousel-item {% if loop.first %}active{% endif %}">
                                         <div class="image-wrapper">
@@ -375,6 +380,34 @@ function submitEditForm(boardId) {
                 if (carouselContainer) {
                     carouselContainer.style.display = "none";
                 }
+            }
+
+            // Update the edit time if provided in the response data
+            if (data.date_edited) {
+
+                // Remove the specific 'Time Edit:' row if it exists
+                const oldEditedTimeDiv = document.querySelector(`#post-${boardId} #old-date-edited`);
+                if (oldEditedTimeDiv) {
+                    oldEditedTimeDiv.remove();
+                }
+                            
+                // Now, create a new edited time row
+                const editedTimeRow = document.createElement("div");
+                editedTimeRow.classList.add("row", "date_edited");
+
+                const labelCol = document.createElement("div");
+                labelCol.classList.add("col-6", "ellipsis-label");
+                labelCol.textContent = "Time Edit:";
+
+                const valueCol = document.createElement("div");
+                valueCol.classList.add("col-6", "ellipsis");
+                valueCol.textContent = data.date_edited;
+
+                editedTimeRow.appendChild(labelCol);
+                editedTimeRow.appendChild(valueCol);
+
+                const infoPosts = document.querySelector(`#post-${boardId} .info_posts`);
+                infoPosts.appendChild(editedTimeRow);
             }
 
             // Hide the edit form and show the post

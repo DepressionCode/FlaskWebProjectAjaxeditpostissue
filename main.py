@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash, jsonify
 from datetime import datetime
 from pymysql.err import IntegrityError
+from json import dumps, loads
 from werkzeug.utils import secure_filename
 import pymysql
 import re
@@ -9,6 +10,7 @@ import hashlib
 import random
 import uuid
 import json
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'jfif', 'gif'}
 app = Flask(__name__)
 
@@ -700,62 +702,72 @@ def your_posts():
 
 @app.route('/pythonlogin/edit_post', methods=['POST'])
 def edit_post():
-    board_id = request.form['board_id']
-    date_edited = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-    title = request.form['title']
-    brag = request.form['brag']
-    images = request.files.getlist('image')
+    try:
+        board_id = request.form['board_id']
+        date_edited = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+        title = request.form['title']
+        brag = request.form['brag']
+        images = request.files.getlist('image')
 
-    if not board_id or not title or not brag:
-        return "Invalid input", 400
+        if not board_id or not title or not brag:
+            return "Invalid input", 400
 
-    image_filenames = []
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                # Get old images from the database
+                cursor.execute("SELECT image FROM tblboard WHERE board_id = %s", (board_id,))
+                result = cursor.fetchone()
+                old_image_filenames = json.loads(result["image"]) if result and result["image"] else []
+                print(f"Old image filenames: {old_image_filenames}")
 
-    with create_connection() as connection:
-        with connection.cursor() as cursor:
-            # Before saving new images, delete the old ones
-            cursor.execute("SELECT image FROM tblboard WHERE board_id = %s", (board_id,))
-            result = cursor.fetchone()
-            old_image_filenames = json.loads(result["image"]) if result and result["image"] else []
+                # Process new images
+                image_filenames = old_image_filenames.copy()
+                for image in images:
+                    if str(image.filename.split('.')[-1]) in ALLOWED_EXTENSIONS:
+                        unique_filename = str(uuid.uuid4()) + "." + image.filename.split('.')[-1]
+                        image.save(os.path.join(app.config["UPLOAD_FOLDER2"], unique_filename))
+                        image_filenames.append(unique_filename)
+                        print(f"Saved image: {unique_filename}")
+                    else:
+                        return "Invalid image format", 400
 
-            for old_image_filename in old_image_filenames:
-                old_image_filepath = os.path.join(app.config["UPLOAD_FOLDER2"], old_image_filename)
-                if os.path.exists(old_image_filepath):
-                    os.remove(old_image_filepath)
+                image_filenames_string = json.dumps(image_filenames)
+                print(f"Serialized image filenames: {image_filenames_string}")
 
-            for image in images:
-                print(image)
-                if str(image.filename.split('.')[-1]) in ALLOWED_EXTENSIONS:
-                    unique_filename = str(uuid.uuid4()) + "." + image.filename.split('.')[-1]
-                    image.save(os.path.join(app.config["UPLOAD_FOLDER2"], unique_filename))
-                    image_filenames.append(unique_filename)
-                else:
-                    return "Invalid image format", 400
+                # Update the post in the database
+                cursor.execute("UPDATE tblboard SET title=%s, date_edited=%s, brag=%s, image=%s WHERE board_id=%s", (title, date_edited, brag, image_filenames_string, board_id))
+                connection.commit()
 
-            image_filenames_string = json.dumps(image_filenames)
+                affected_rows = cursor.rowcount
+                print(f"Rows affected by UPDATE: {affected_rows}")
 
-            cursor.execute("UPDATE tblboard SET title=%s, date_edited=%s, brag=%s, image=%s WHERE board_id=%s", (title, date_edited, brag, image_filenames_string, board_id))
-            connection.commit()
+                cursor.execute("SELECT * FROM tblboard WHERE board_id = %s", (board_id,))
+                post = cursor.fetchone()
+                print(f"Retrieved post data after update: {post}")
 
-            # fetch the updated post
-            cursor.execute("SELECT * FROM tblboard WHERE board_id = %s", (board_id,))
-            post = cursor.fetchone()
-            p = format_date(post['date'])
-            post['date'] = p
-            p = format_date(post['date_edited'])
-            post['date_edited'] = p
+                retrieved_image_filenames = json.loads(post['image'])
+                print(f"Retrieved image filenames after update: {retrieved_image_filenames}")
 
-            # fetch the current user's account information
-            cursor.execute("SELECT * FROM tblusers WHERE user_id = %s", (session['user_id'],))
-            account = cursor.fetchone()
+                p = format_date(post['date'])
+                post['date'] = p
+                p = format_date(post['date_edited'])
+                post['date_edited'] = p
 
-    with create_connection() as connection:
-        with connection.cursor() as cursor:
-            # fetch the updated tblboard data
-            cursor.execute("SELECT * FROM tblboard")
-            tblboard = cursor.fetchall()
+                cursor.execute("SELECT * FROM tblusers WHERE user_id = %s", (session['user_id'],))
+                account = cursor.fetchone()
 
-    return jsonify(status="success", message="Post updated successfully", image_filenames=image_filenames)
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                # fetch the updated tblboard data
+                cursor.execute("SELECT * FROM tblboard")
+                tblboard = cursor.fetchall()
+                print("Fetched tblboard data")
+
+        return jsonify(status="success", message="Post updated successfully", image_filenames=image_filenames, date_edited=post['date_edited'])
+
+    except Exception as e:
+        print(f"Error occurred during database operations: {e}")
+        return jsonify(status="failure", message="An unexpected error occurred", error=str(e))
 
 
 @app.route("/pythonlogin/delete_post", methods=['POST'])
