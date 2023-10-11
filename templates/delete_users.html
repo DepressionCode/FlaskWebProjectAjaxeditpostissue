@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+{% block header %}
+
+<h1>{% block title %}Register{% endblock %} </h1>
+{% endblock %}
+
+{% block content %}
+<div class="border-coloured">
+    <div class="container delete_user_container" id="delete-user-page">
+        <h2>Do you really want to delete {{user.user_name}} with records below?</h2>
+        <br />
+        {% if user.avatar %}
+        <img class="pfp" src="/static/Images/{{user.avatar}}"/>
+        {% else %}
+        <img class="pfp" src="{{ url_for('default_image') }}" alt="Default Image">
+        {% endif %}
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td>{{ user['user_name'] }}</td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td>{{ user['email'] }}</td>
+            </tr>
+        </table>
+        <br />
+        {% if user.role == 'admin' and count_admins > 1 %}
+        <form action="/pythonlogin/delete_users" method="post">
+            <input type="hidden" name="user_id" value="{{user.user_id}}">
+            <input type="hidden" name="avatar" value="{{user.avatar}}">
+            <input type="submit" value="Delete">
+        </form>
+        {% elif user.role != 'super_admin' %}
+        <form action="/pythonlogin/delete_users" method="post">
+            <input type="hidden" name="user_id" value="{{user.user_id}}">
+            <input type="hidden" name="avatar" value="{{user.avatar}}">
+            <input type="submit" value="Delete">
+        </form>
+        {% elif user.role == 'admin' %}
+        <p>You cannot delete the only admin account.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

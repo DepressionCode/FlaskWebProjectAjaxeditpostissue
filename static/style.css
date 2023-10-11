@@ -1,0 +1,1051 @@
+* {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: #435165;
+    margin: 0;
+}
+
+#Login {
+    background-color: #5b6574;
+    margin: 0;
+}
+
+#Register {
+    background-color: #5b6574;
+    margin: 0;
+}
+
+.login, .register {
+    width: 400px;
+    background-color: #ffffff;
+    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+    margin: 100px auto;
+}
+
+    .login h1, .register h1 {
+        text-align: center;
+        color: #5b6574;
+        font-size: 24px;
+        padding: 20px 0 20px 0;
+        border-bottom: 1px solid #dee0e4;
+    }
+
+    .login .links, .register .links {
+        display: flex;
+        padding: 0 15px;
+    }
+
+        .login .links a, .register .links a {
+            color: #adb2ba;
+            text-decoration: none;
+            display: inline-flex;
+            padding: 0 10px 10px 10px;
+            font-weight: bold;
+        }
+
+            .login .links a:hover, .register .links a:hover {
+                color: #9da3ac;
+            }
+
+            .login .links a.active, .register .links a.active {
+                border-bottom: 3px solid #3274d6;
+                color: #3274d6;
+            }
+
+    .login form, .register form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-top: 20px;
+    }
+
+        .login form label, .register form label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            background-color: #3274d6;
+            color: #ffffff;
+        }
+
+        .login form input[type="password"], .login form input[type="text"], .login form input[type="email"], .register form input[type="password"], .register form input[type="text"], .register form input[type="email"] {
+            width: 310px;
+            height: 50px;
+            border: 1px solid #dee0e4;
+            margin-bottom: 20px;
+            padding: 0 15px;
+        }
+
+        .login form input[type="submit"], .register form input[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #3274d6;
+            border: 0;
+            cursor: pointer;
+            font-weight: bold;
+            color: #ffffff;
+            transition: background-color 0.2s;
+        }
+
+            .login form input[type="submit"]:hover, .register form input[type="submit"]:hover {
+                background-color: #2868c7;
+                transition: background-color 0.2s;
+            }
+
+.navtop {
+    background-color: #2f3947;
+    height: 60px; /* Adjust this value to your preferred height */
+    width: 100%;
+    border: 0;
+}            
+
+.navtop h1 {
+    font-size: 1.5rem; 
+    color: #eaebed;
+    font-weight: normal;
+    margin: 0;
+}
+
+.navtop a {
+    margin: 0 0.5rem; 
+    padding: 0.5rem 1rem; 
+    text-decoration: none;
+    color: #c1c4c8;
+    font-weight: bold;
+    transition: color 0.3s;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.navtop a::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 100%;
+    white-space: nowrap;
+    margin-left: 5px;
+}
+
+.navtop a i {
+    margin-right: 0.5rem; 
+}
+
+.navtop a:hover {
+    color: #eaebed;
+}
+
+body.loggedin {
+    background-color: #f3f4f7;
+}
+
+.active-nav {
+    font-weight: bold;
+    background-color: #5f74ad;
+}
+
+.height-matching-navbar{
+    background-color: #2f3947;
+    height: 60px; /* Adjust this value to your preferred height */
+    width: 100%;
+    border: 0;
+}
+
+@media (max-width: 992px) {
+    .hide-text {
+        display: none;
+    }
+
+    .icon-sad {
+        margin-right: 10px !important;  /* or whatever margin you want */
+    }
+
+    .navtop a i {
+        margin-right: 0; /* remove margin from icons on smaller screens */
+    }
+
+    .height-matching-navbar{
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+.content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+    .content h2 {
+        padding: 25px 0;
+        padding-left: 25px !important;
+        font-size: 22px;
+        border-bottom: 1px solid #e0e0e3;
+        color: #49536e;
+    }
+
+    .content > p, .content > div {
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
+        margin-top: 25px;
+        margin-bottom: 25px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 25px;
+        background-color: #fff;
+    }
+
+        .content > p table td, .content > div table td {
+            padding: 5px;
+        }
+
+            .content > p table td:first-child, .content > div table td:first-child {
+                font-weight: bold;
+                color: #4a536e;
+                padding-right: 15px;
+            }
+
+        .content > div p {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 12px;
+            padding-right: 12px;
+            margin: 0 0 10px 0;
+        }
+
+.pfp {
+    border-radius: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 150px;
+    width: 150px;
+}
+
+.flash-message {
+    background-color: #f1c40f;
+    color: #000;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.msg {
+    background-color: #f1c40f;
+    color: #000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.msg2 {
+    background-color: #ff0000;
+    color: #000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.msg3 {
+    background-color: #3cff00;
+    color: #000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.image-fit {
+    width: 50%;
+    margin-bottom: 10px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    margin-bottom: 0px;
+}
+
+/* Profile page specific styles */
+
+.profile-container {
+    background-color: #ffffff;
+    width: 70%;
+    margin: 50px auto !important;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+    text-align: center;
+    font-size: 24px;
+    color: #4a536e;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #dee0e4;
+}
+
+.profile-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.profile-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e4;
+}
+
+.profile-button {
+    padding: 8px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #3274d6;
+    color: #ffffff;
+    transition: background-color 0.2s;
+}
+
+.profile-button:hover {
+    background-color: #2868c7;
+}
+
+.profile-button-danger {
+    background-color: #d63f40 !important;
+}
+
+.profile-button-danger:hover {
+    background-color: #c73234 !important;
+}
+
+.profile-img-default,
+.profile-img-custom {
+    border-radius: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 150px;
+    width: 150px;
+}
+
+.button-container-2 {
+    display: flex;
+    width: unset;
+}
+
+.inline-form {
+    display: inline-block;
+}
+
+/* Media Queries for Profile Image */
+@media (width < 767px) {
+    .profile-img-default, .profile-img-custom {
+        width: 100px;   /* or whatever size you see fit */
+        height: 100px;
+        display: block;
+        margin: 0 auto; /* Center images */
+    }
+
+    /* Buttons: For smaller screens, the buttons will be full width */
+    .profile-button {
+        width: 100%;
+    }
+    
+    .profile-container {
+        width: 100%;
+    }
+}
+
+/* Admin Access Styles */
+
+.admin-access-header {
+    text-align: center;
+    font-size: 22px;
+    color: #4a536e;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.admin-hr {
+    border: 0.5px solid #dee0e4;
+    margin: 10px 0;
+}
+
+.admin-container {
+    margin-top: 20px;
+}
+
+.admin-row {
+    padding: 10px 0;
+    align-items: center;
+}
+
+.admin-actions {
+    text-align: right;
+}
+
+.inline-form {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.admin-btn {
+    padding: 5px 15px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #3274d6;
+    color: #ffffff;
+    transition: background-color 0.2s;
+}
+
+.admin-btn:hover {
+    background-color: #2868c7;
+}
+
+.admin-btn-danger {
+    background-color: #d63f40 !important;
+}
+
+.admin-btn-danger:hover {
+    background-color: #c73234 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .admin-actions {
+        text-align: center;
+        margin-top: 10px;
+    }
+}
+
+/* Show everything by default */
+.button-text {
+    display: inline;
+}
+
+/* When the screen is 992px or less */
+@media (max-width: 992px) {
+    .button-text {
+        display: none;
+    }
+}
+
+.update_user_container {
+    background-color: #435165 !important;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.pfp {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.btn-link {
+    padding-left: 0;
+    font-weight: 400;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.btn-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+
+/* Container styling */
+.delete_user_container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* Header styling */
+.delete_user_container h1,
+.delete_user_container h2 {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important; /* modern browsers */
+}
+
+/* Image styling */
+.delete_user_container .pfp {
+    display: block;
+    margin: 20px auto;
+    max-width: 150px;
+    border-radius: 50%;
+}
+
+/* Table styling */
+.delete_user_container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    max-width: 510px;
+}
+
+
+.delete_user_container td {
+    padding: 10px;
+    border-bottom: 1px solid #eaeaea;
+    max-width: 400px;
+}
+
+.delete_user_container tr {
+    max-width: 510px;
+}
+
+.delete_user_container tr:last-child td {
+    border-bottom: none;
+}
+
+/* Button styling */
+.delete_user_container input[type="submit"] {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #ff5252;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete_user_container input[type="submit"]:hover {
+    background-color: #ff2b2b;
+}
+
+/* Information text */
+.delete_user_container p {
+    text-align: center;
+    color: #ff5252;
+    font-style: italic;
+}
+
+.border-coloured {
+    background-color: #435165 !important;
+    max-width: 600px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#delete-user-page td, h2 {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important; /* modern browsers */
+}
+
+.profile-container div.row > .col-md-6 {
+    word-wrap: break-word;
+    overflow-wrap: break-word
+}
+
+.admin-container .col-md-2 {
+    max-width: 150px;
+    word-wrap: break-word;
+    overflow-wrap: break-word; /* modern browsers */
+}
+
+.admin-container .col-md-3 {
+    max-width: 230px;
+    word-wrap: break-word;
+    overflow-wrap: break-word; /* for modern browsers */
+}
+
+textarea {
+    resize: none;
+}
+
+.edit-form-container {
+    word-wrap: break-word;
+    overflow-wrap: break-word; /* for modern browsers */
+}
+
+.edit-form-container title, h4 {
+    max-width: 630px !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word; /* for modern browsers */
+}
+
+.info_posts {
+    max-width: 100%; /* Ensures the container takes full width */
+}
+
+.post_text {
+    overflow-wrap: break-word; /* for modern browsers */
+}
+
+.comment_text {
+    overflow-wrap: break-word; /* for modern browsers */
+}
+
+.carousel-inner .carousel-item {
+    background-color: grey;
+    position: relative;
+    overflow: hidden;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+}
+
+.image-wrapper {
+    position: absolute; /* Position absolutely inside relative parent */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-image {
+    object-fit: contain;
+    width: 100%;
+    max-height: 100%;
+}
+
+.carousel-indicators li {
+    width: 30px !important;
+    height: 3px !important;
+    background-color: rgba(174, 153, 210, 0.5) !important;
+    border: none !important;
+    border-radius: 0 !important; /* Remove any roundness */
+    margin-right: 3px !important;
+    margin-left: 3px !important;
+    pointer-events: auto !important; /* Ensure that they can be clicked */
+}
+
+.carousel-indicators .active {
+    background-color: rgba(174, 153, 210, 1)  !important;
+    width: 30px !important;
+    height: 3px !important;
+}
+
+.carousel-indicators li:hover {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    transition: background-color 0.5s ease !important;
+}
+
+.carousel-indicators {
+    position: static; /* Make sure it's not positioned absolutely */
+    justify-content: center; /* Center align the dots, adjust if needed */
+    margin: 0; /* Remove default margins */
+    list-style-type: none !important;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    position: absolute !important;
+    z-index: 5 !important;
+    display: inline-block !important;
+    width: 50px !important;
+    height: auto !important;
+    padding: 0 !important;
+    font-size: 20px !important;
+    text-align: center !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: background-color 0.5s ease !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    background-color: transparent !important;
+    opacity: 1 !important;
+}
+
+.carousel-control-prev {
+    left: 10px !important;
+}
+
+.carousel-control-next {
+    right: 10px !important;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    background: rgba(0, 0, 0, 0.7) !important;
+    opacity: 1 !important; /* Display it on hover */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    display: block !important;
+    width: 20px !important;
+    height: 20px !important;
+    background-size: 100% 100% !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important; /* Center the icons */
+}
+
+.carousel-control-next-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+.carousel-control-prev-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M11.354 1.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 0 .708l6 6a.5.5 0 0 0 .708-.708L5.707 8 11.354 2.354a.5.5 0 0 0 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+
+.carousel-control-prev:focus,
+.carousel-control-next:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+.carousel-control-prev:hover .carousel-control-prev-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M11.354 1.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 0 .708l6 6a.5.5 0 0 0 .708-.708L5.707 8 11.354 2.354a.5.5 0 0 0 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+.carousel-progress {
+    width: 100% !important;
+    height: 4px !important;
+    background-color: rgba(174, 153, 210, 1) !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    box-sizing: border-box !important;  /* This ensures that padding and border are included in the total width and height */
+    z-index: 6 !important; /* Considering your controls might have z-index of 5, set this to 6 or even higher if necessary */
+}
+
+.carousel-progress-bar {
+    height: 100% !important;
+    background-color: #000 !important;
+}
+
+.carousel {
+    padding: 0 !important;  /* This will remove any padding */
+}
+
+.carousel-container {
+    position: relative;
+}
+
+/* General styles for the posting function */
+.posting_container {
+    width: 50%;
+    margin: 50px auto;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    border-radius: 8px;
+}
+
+/* Typography */
+.posting_container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.posting_container label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* Form Controls */
+.posting_container input[type="text"],
+.posting_container textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.posting_container input[type="file"] {
+    margin-bottom: 15px;
+}
+
+.posting_container input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.posting_container input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.ellipsis em {
+    display: block;
+}
+
+.your-posts-feed-page {
+    background-color: #f4f5f7 !important;
+}
+
+.your-posts-feed-page .container {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 0 15px !important;
+}
+
+.your-posts-feed-page h1, .your-posts-feed-page h4 {
+    margin-bottom: 20px !important;
+}
+
+.your-posts-feed-page h4 {
+    font-size: 20px !important;
+    font-weight: bold !important;
+}
+
+.your-posts-feed-page p.post_text {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+}
+
+.your-posts-feed-page input[type="text"], .your-posts-feed-page textarea {
+    padding: 10px 15px !important;
+    border-radius: 5px !important;
+    border: 1px solid #d1d5db !important;
+}
+
+.your-posts-feed-page input[type="submit"] {
+    background-color: #007bff !important;
+    border: none !important;
+    border-radius: 5px !important;
+    color: #fff !important;
+    transition: background-color 0.2s !important;
+}
+
+.your-posts-feed-page input[type="submit"]:hover {
+    background-color: #0056b3 !important;
+}
+
+.your-posts-feed-page .col-4 {
+    border-right: 1px solid #d1d5db !important;
+    background-color: #fff !important;
+    position: relative !important;
+    flex-basis: auto !important;
+    max-width: 33.333333% !important;
+}
+
+.your-posts-feed-page .col-8 {
+    background-color: #fff !important;
+}
+
+.your-posts-feed-page .row {
+    padding: 15px !important;
+    background-color: transparent !important;
+    margin-bottom: 25px !important;
+    border-radius: 5px !important;
+    display: flex !important;
+    position: relative !important;
+}
+
+.your-posts-feed-page .row::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: -5px !important; /* Extend shadow slightly below */
+    border-radius: 5px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    z-index: -1 !important;
+}
+
+.your-posts-feed-page .col-6 {
+    padding: 0 !important;
+}
+
+.your-posts-feed-page .info_posts .row {
+    margin: 0 !important;
+}
+
+.ellipsis-label {
+    font-weight: bold; /* To emphasize that it's a label */
+}
+
+.responsive-divider {
+    display: none !important;
+    margin-bottom: 0px !important;
+}
+
+/* For larger screens, ensure .col-4 behaves as a single column */
+/* Inside .col-4 for larger screens, both image and info take full width */
+.col-4 > .row > div {
+    flex-basis: 100% !important; 
+    max-width: 100% !important; 
+}
+
+@media (max-width: 1000px) {
+    .your-posts-feed-page .col-4, 
+    .your-posts-feed-page .col-8 {
+        flex-basis: 100% !important; /* make it take the full width */
+        max-width: 100% !important; /* override the max-width */
+    }
+
+    .responsive-divider {
+        display: block !important;
+        margin-bottom: 0px !important;
+    }
+
+    .your-posts-feed-page .col-4 {
+        border-right: 0px !important;
+        display: flex !important; /* Ensure .col-4 behaves like a flex container */
+        align-items: flex-start !important; /* Align content to the start (or left) */
+        justify-content: flex-start !important; /* This will ensure content does not stretch */
+        background-color: rgb(240, 240, 240) !important;
+    }
+
+    /* Image and Info will now take their natural widths and align to the left */
+    .col-4 > .row {
+        flex-basis: 100% !important; /* make it take the full width */
+        max-width: 100% !important; /* override the max-width */
+        display: flex !important;
+        align-items: flex-start !important; /* Align content to the start (or left) */
+        justify-content: flex-start !important; /* This will ensure content does not stretch */
+    }
+
+    .col-4 > .row > div {
+        flex-basis: auto !important;
+        max-width: none !important;
+        display: inline-block !important; /* This will keep them in the same line */
+    }
+
+    .pfp {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        height: 75px;
+        width: 75px;
+    }
+
+    .info_posts {
+        display: inline-block;
+        vertical-align: middle !important;
+    }
+
+    /* Resetting the col-6 behavior for labels and info inside .info_posts */
+    .your-posts-feed-page .info_posts .col-6 {
+        flex-basis: 100% !important; /* make it take the full width */
+        max-width: 100% !important; /* override the max-width */
+    }
+
+    /* Ensure both columns inside the .col-4 take full width */
+    .col-4 > .row > .col-12 {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .your-posts-feed-page .col-4 .row {
+        margin: 0 !important;
+    }
+}
+
+.your-posts-feed-page button {
+    padding: 10px 15px !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s !important;
+    margin: 5px 0 !important;
+}
+
+.your-posts-feed-page .btn-primary {
+    background-color: #007bff !important;
+    color: #ffffff !important;
+}
+
+.your-posts-feed-page .btn-primary:hover {
+    background-color: #0056b3 !important;
+}
+
+.your-posts-feed-page .btn-secondary {
+    background-color: #d33 !important;
+    color: #ffffff !important;
+}
+
+.your-posts-feed-page .btn-secondary:hover {
+    background-color: #b00 !important;
+}
+
+.your-posts-feed-page .like-btn, 
+.your-posts-feed-page .dislike-btn,
+.your-posts-feed-page .comment_like-btn, 
+.your-posts-feed-page .comment_dislike-btn {
+    background-color: #f4f4f4 !important;
+    color: #333 !important;
+}
+
+.your-posts-feed-page .like-btn:hover, 
+.your-posts-feed-page .dislike-btn:hover,
+.your-posts-feed-page .comment_like-btn:hover, 
+.your-posts-feed-page .comment_dislike-btn:hover {
+    background-color: #e1e1e1 !important;
+}
+
+.comment-form form {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.comment-form textarea {
+    margin-bottom: 10px; /* Optional: Add some space between the textarea and the button */
+}
+
+.No_Posts {
+    font-size: 18px !important;
+    color: #6c757d !important;  /* Greyish color for the text */
+    text-align: center !important;
+    padding: 20px 0 !important;
+    background-color: #f8f9fa !important; /* Light grey background */
+    border-radius: 8px !important;
+    margin-top: 30px !important;
+    margin-bottom: 30px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important; /* Slight shadow for a lifted effect */
+    max-width: 950px !important;
+}

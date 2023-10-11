@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body id="Login">
+    <div class="login">
+        <h1>Login</h1>
+        <div class="links">
+            <a href="{{ url_for('login') }}" class="active">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        </div>
+        <form action="{{ url_for('login') }}" method="post">
+            <label for="email">
+                <i class="fas fa-envelope"></i>
+            </label>
+            <input type="text" name="email" maxlength="100" placeholder="Email" id="email" required onblur="checkEmailFormat()">
+            <label for="password">
+                <i class="fas fa-lock"></i>
+            </label>
+            <input type="password" name="password" maxlength="100" placeholder="Password" id="password" required>
+            <input class="btn btn-secondary btn-sm" type="button" value="Show Password" id="show_hide_password" onclick="toggle_password_visiblity()" style="display: none;">
+            <br />
+            <div id="emailValidationMessage"></div>
+            <br />
+            {% if msg %}
+            <div class="msg">{{ msg }}</div>
+            {% endif %}
+            <input type="submit" value="Login">
+        </form>
+    </div>
+
+</body>
+</html>
+
+<script>
+    
+    function toggle_password_visiblity() {
+        var x = document.getElementById("password");
+        var y = document.getElementById("show_hide_password")
+        if (x.type === "password") {
+            x.type = "text";
+            y.value = "Hide Password"
+        } else {
+            x.type = "password";
+            y.value = "Show Password"
+        }
+    }
+
+    function checkEmailFormat() {
+    let email = document.getElementById("email").value;
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '{{ url_for("check_email_format") }}', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        if (this.status == 200) {
+            let response = JSON.parse(this.responseText);
+            let messageDiv = document.getElementById("emailValidationMessage");
+            if (response.valid) {
+                messageDiv.innerHTML = "Valid Email Format!";
+                messageDiv.style.backgroundColor = "green";
+                messageDiv.style.color = "white";
+                messageDiv.style.padding = "10px";
+                messageDiv.style.borderRadius = "5px";
+                messageDiv.style.marginTop = "20px";
+                messageDiv.style.marginLeft = "110px";
+                messageDiv.style.marginRight = "110px";
+            } else {
+                messageDiv.innerHTML = "Invalid Email Format!";
+                messageDiv.style.backgroundColor = "red";
+                messageDiv.style.color = "white";
+                messageDiv.style.padding = "10px";
+                messageDiv.style.borderRadius = "5px";
+                messageDiv.style.marginTop = "20px";
+                messageDiv.style.marginLeft = "110px";
+                messageDiv.style.marginRight = "110px";
+            }
+        }
+    };
+    xhr.send('email=' + email);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("password").addEventListener("focus", function() {
+            document.getElementById("show_hide_password").style.display = "inline-block";
+        });
+        
+        document.getElementById("password").addEventListener("input", function() {
+            document.getElementById("show_hide_password").style.display = "inline-block";
+        });
+    });  
+
+</script>

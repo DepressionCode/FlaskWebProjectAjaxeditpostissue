@@ -1,0 +1,103 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h2 class="h2-margin-left">Super Admin Page</h2>
+<div class="container">
+    <div class="container profile-container">
+        <h2 class="text-center profile-header">Profile Page</h2>
+        <div class="row">
+            <div>
+                <p class="text-center">Your account details are below:</p>
+                
+                <div class="text-center">
+                    {% if account["avatar"] == "" %}
+                    <img class="profile-img-default" src="{{ url_for('default_image') }}" alt="Default Image">
+                    {% else %}
+                    <img class="profile-img-custom" src="/static/Images/{{account["avatar"]}}" alt="Profile Image">
+                    {% endif %}
+                </div>
+    
+                <!-- Using Bootstrap's grid for profile details -->
+                <div class="row mt-3">
+                    <div class="col-md-6 text-right"><strong>Username:</strong></div>
+                    <div class="col-md-6">{{ account['user_name'] }}</div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6 text-right"><strong>Email:</strong></div>
+                    <div class="col-md-6">{{ account['email'] }}</div>
+                </div>
+    
+                <div class="row mt-4">
+                    <div class="col-md-6 offset-md-3 mb-2">
+                        <form action="/pythonlogin/update_users?id={{account.user_id}}" method="get">
+                            <input type="hidden" name="user_id" value="{{account.user_id}}" />
+                            <button class="profile-button w-100" type="submit">
+                                <i class="fas fa-user-edit"></i>
+                                <span class="button-text"> Update User </span> 
+                            </button>
+                        </form>
+                    </div>
+                </div>                     
+            </div>
+        </div>
+    </div>
+
+    <h3 class="admin-access-header">Admin Access:</h3>
+    <hr class="admin-hr">
+        
+    <div class="container admin-container">
+        {% for data in accounts %}
+            {# Check if current data's user ID is not equal to the logged-in account's user ID #}
+            {% if data['user_id'] != account['user_id'] %}
+            <div class="row admin-row">
+                <div class="col-md-2">
+                    <strong>Username:</strong> {{ data['user_name'] }}
+                </div>
+                <div class="col-md-2">
+                    <strong>Email:</strong> {{ data['email'] }}
+                </div>
+                <div class="col-md-8 admin-actions">
+                    {% if data['role_id'] == 0 %}
+                    <form action="/pythonlogin/make_admin" method="post" class="inline-form">
+                        <input type="hidden" name="user_id" value="{{data.user_id}}" />
+                        <button class="btn admin-btn" type="submit">
+                            <i class="fas fa-crown"></i> <!-- Example icon for making someone an admin -->
+                            <span class="button-text"> Make Admin </span>
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    {% if data['role_id'] == 1 %}
+                    <form action="/pythonlogin/make_user" method="post" class="inline-form">
+                        <input type="hidden" name="user_id" value="{{data.user_id}}" />
+                        <button class="btn admin-btn" type="submit">
+                            <i class="fas fa-user"></i> <!-- Example icon for making someone a user -->
+                            <span class="button-text"> Make User </span>
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    <form action="/pythonlogin/update_users?id={{data.user_id}}" method="get" class="inline-form">
+                        <input type="hidden" name="user_id" value="{{data.user_id}}" />
+                        <button class="btn admin-btn" type="submit">
+                            <i class="fas fa-user-edit"></i>
+                            <span class="button-text"> Update User </span>
+                        </button>
+                    </form>
+                    <form action="/pythonlogin/delete_users?id={{data.user_id}}" method="get" class="inline-form">
+                        <input type="hidden" name="user_id" value="{{data.user_id}}" />
+                        <button class="btn admin-btn admin-btn-danger" type="submit">
+                            <i class="fas fa-trash-alt"></i>
+                            <span class="button-text"> Delete User </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <hr class="admin-hr">
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

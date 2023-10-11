@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+{% block header %}
+<h1 class="text-center my-4 ellipsis">{% block title %}Update {{user['user_name']}}'s Records{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<script>
+
+    function toggle_password_visiblity() {
+        var x = document.getElementById("password");
+        var y = document.getElementById("show_hide_password");
+        if (x.type === "password") {
+            x.type = "text";
+            y.textContent = "Hide Password"; // Changed 'value' to 'textContent' for button element
+        } else {
+            x.type = "password";
+            y.textContent = "Show Password"; // Changed 'value' to 'textContent' for button element
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("password").addEventListener("focus", function() {
+            document.getElementById("show_hide_password").style.display = "inline-block";
+        });
+        
+        document.getElementById("password").addEventListener("input", function() {
+            document.getElementById("show_hide_password").style.display = "inline-block";
+        });
+    });    
+    
+</script>
+
+<div class="container update_user_container mt-5">
+
+    {% with messages = get_flashed_messages(category_filter=["update"]) %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" action="/pythonlogin/update_users?user_id={{user['user_id']}}" enctype="multipart/form-data" class="bg-light p-4 rounded">
+        <input type="hidden" name="user_id" value="{{user['user_id']}}">
+        <input type="hidden" name="password" value="{{user['password']}}">
+        <input type="hidden" name="avatar" id="avatar" value="{{user['avatar']}}">
+        
+        <div class="form-group">
+            <label for="user_name" class="mb-2"><strong>Username</strong></label>
+            <input type="text" id="username" name="user_name" maxlength="30" value="{{user['user_name']}}" class="form-control mb-3">
+        </div>
+        
+        <div class="form-group">
+            <label for="email" class="mb-2"><strong>Email</strong></label>
+            <input type="text" id="email" name="email" maxlength="100" value="{{user['email']}}" class="form-control mb-3">
+        </div>
+        
+        <div class="form-group">
+            <label for="password" class="mb-2"><strong>Password</strong></label>
+            <input type="password" id="password" name="new_password" maxlength="100" placeholder="••••••••" autocomplete="off" class="form-control mb-2">
+            <button type="button" class="btn btn-secondary btn-sm" id="show_hide_password" onclick="toggle_password_visiblity()" style="display: none;">Show Password</button>
+        </div>
+        
+        <div class="form-group">
+            <label for="avatar" class="mb-2"><strong>Image:</strong></label><br>
+            {% if user["avatar"] == "" %}
+            <img class="pfp" src="{{ url_for('default_image') }}" alt="Default Image" style="max-width: 200px; display: block; margin-bottom: 15px;">
+            {% else %}
+            <img class="pfp" src="/static/Images/{{user.avatar}}" alt="User Image" style="max-width: 200px; display: block; margin-bottom: 15px;">
+            {% endif %}
+            <input type="file" id="avatar" value="//static/Images/{{user.avatar}}" name="avatar" accept="image/*" class="form-control-file mb-3">
+        </div>        
+
+        <button type="submit" class="btn btn-primary" onclick="if (confirm('Are you SURE you wish to update?')) history.back();">
+            <i class="fas fa-check"></i>
+            <span class="button-text"> Submit </span>
+        </button>
+        <button type="button" class="btn btn-danger" onclick="if (confirm('Are you SURE you wish to cancel?')) history.back();">
+            <i class="fas fa-times"></i>
+            <span class="button-text"> Cancel </span>
+        </button>        
+    </form>
+</div>
+{% endblock %}

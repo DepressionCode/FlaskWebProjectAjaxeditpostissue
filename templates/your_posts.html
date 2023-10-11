@@ -1,0 +1,750 @@
+{% extends 'layout.html' %}
+
+{% block title %}Your Posts{% endblock %}
+
+{% block content %}
+
+<script>
+
+    // Stop the form resubmission on page refresh
+    
+    if ( window.history.replaceState ) {
+    
+    window.history.replaceState( null, null, window.location.href );
+    
+    }
+    
+</script>
+
+<div class="container posting_container">
+    <h1>Your Posts</h1>
+    <form id="post_form" method="POST" action="{{ url_for('your_posts') }}" enctype="multipart/form-data">
+        <input type="hidden" name="board_id" value="{{tblboard['board_id']}}">
+        
+        <label for="title">
+            Title Of Post:
+        </label>
+        <br>
+        <input type="text" name="title" maxlength="50" placeholder="Title" id="title_id" required>
+        <br>
+        <br>
+        
+        <label for="image">
+            Image
+        </label>
+        <span style="color: red;">(Max of 5 images)</span>
+        <br>
+        <input type="file" id="image" name="image" accept="image/*" multiple onchange="validateFiles(this);">
+        <br>
+        <br>
+        <label for="brag">
+            Type Your Post Here:
+        </label>
+        <br>
+        <textarea type="text" id="brag_id" name="brag" rows="4" cols="50" maxlength="255" required></textarea>
+        <br>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+    {% if msg5 %}
+        <div class="msg2">{{ msg5 }}</div>
+    {% endif %}
+</div>
+
+{% if tblboard %}
+    {% for post in tblboard %}
+        <div class="row your-posts-feed-page post" id="post-{{ post['board_id'] }}">
+            <div class="col-4">
+                <div class="row">
+                    <!-- Image and Info column -->
+                    <div class="col-12">
+                        {% if post["user_avatar"] == "" %}
+                        <img class="pfp" src="{{ url_for('default_image') }}" alt="Default Image">
+                        {% else %}
+                        <img class="pfp" src="/static/Images/{{post["user_avatar"]}}" />
+                        {% endif %}
+
+                        <div class="info_posts">
+                            <div class="row">
+                                <div class="col-6 ellipsis-label">Username:</div>
+                                <div class="col-6 ellipsis">{{ post['user_name'] }}</div>
+                            </div>
+                            {% if post['date'] %}
+                            <div class="row">
+                                <div class="col-6 ellipsis-label">Time Posted:</div>
+                                <div class="col-6 ellipsis">{{ post['date'] }}</div>
+                            </div>
+                            {% endif %}
+                            {% if post['date_edited'] %}
+                            <div class="row">
+                                <div class="col-6 ellipsis-label">Time Edit:</div>
+                                <div class="col-6 ellipsis">{{ post['date_edited'] }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="responsive-divider">   
+            <div class="col-8">
+                <div class="row">
+                    <h4 id="post-title-{{post['board_id']}}">{{post['title']}}</h4>
+                    <p class="post_text" id="post-brag-{{post['board_id']}}">{{post['brag']}}</p>
+
+                    {% if post['image']|length > 1 %}
+                    <div class="carousel-container">  
+                        <!-- Carousel main container -->
+                        <div id="post_carousel-{{ loop.index }}" class="carousel slide" data-bs-ride="carousel">
+                            <!-- Progress bar -->
+                            <div class="carousel-progress">
+                                <div class="carousel-progress-bar"></div>
+                            </div>                       
+                    
+                            <!-- Carousel items -->
+                            <div class="carousel-inner" id="carousel-inner-{{post['board_id']}}">
+                                {% for image_filename in post['image'] %}
+                                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                        <div class="image-wrapper">
+                                            <img src="{{ url_for('static', filename='post_images/' + image_filename) }}" id="post-image-{{ post['board_id'] }}-{{ loop.index }}" alt="Slide {{ loop.index }}" class="carousel-image">
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                    
+                            <!-- Previous control -->
+                            <a class="carousel-control-prev" style="color: black;" href="#post_carousel-{{ loop.index }}" role="button" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </a>
+                    
+                            <!-- Next control -->
+                            <a class="carousel-control-next" style="color: black;" href="#post_carousel-{{ loop.index }}" role="button" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </a>
+
+                            <!-- Carousel indicators -->
+                            <ol class="carousel-indicators" style="padding-top: 10px;">
+                                {% for image_filename in post['image'] %}
+                                    <li data-bs-target="#post_carousel-1" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+                    </div>
+                    {% elif post['image']|length == 1 %}
+                    <div id="post_single-{{post['board_id']}}">
+                        <img class="img image-fit" src="{{ url_for('static', filename='post_images/' + post['image'][0]) }}" id="post-image-{{ post['board_id'] }}-0" />
+                    </div>
+                    {% endif %}                                                         
+                
+                    <div class="col-12">
+                        <button class="like-btn" data-board-id="{{post['board_id']}}" data-action-status="true">Like</button>
+                        <span id="likes-{{ post['board_id'] }}">{{ post['likes_count'] or 0 }}</span>
+                    
+                        <button class="dislike-btn" data-board-id="{{post['board_id']}}" data-action-status="false">Dislike</button>
+                        <span id="dislikes-{{ post['board_id'] }}">{{ post['dislikes_count'] or 0 }}</span>                                 
+                    </div>
+                    
+
+                    <br>
+                    <br>
+                    <hr />
+                    <!-- Print the values -->
+
+                    {% if session["user_id"] == post['user_id'] or session["role_id"] == 1 %}
+                        <div class="col-6">
+                            <!-- Add this hidden edit form inside the loop for posts -->
+                            {% if session["user_id"] == post['user_id'] %}
+                                <div class="edit-form-container" id="edit-form-{{post['board_id']}}" style="display:none;">
+                                    <h3>Edit Post</h3>
+                                    <form class="edit-form" data-board-id="{{post['board_id']}}" enctype="multipart/form-data">
+                                        <label for="edit-title-{{post['board_id']}}">Title Of Post:</label>
+                                        <br>
+                                        <input type="text" id="edit-title-{{post['board_id']}}" value="{{post['title']}}" maxlength="50" required>
+                                        <br>
+                                        <br>
+                                        <label for="edit-image-{{post['board_id']}}"> Image </label>
+                                        <span style="color: red;">(Max of 5 images)</span>
+                                        <br>
+                                        <input type="file" id="edit-image-{{post['board_id']}}" name="image" accept="image/*" multiple onchange="validateFiles(this);"/>
+                                        <br>
+                                        <br>
+                                        <label for="edit-brag-{{post['board_id']}}">Type Your Post Here:</label>
+                                        <br>
+                                        <br>
+                                        <textarea id="edit-brag-{{post['board_id']}}" rows="4" cols="50" maxlength="255">{{post['brag']}}</textarea>
+                                        <br>
+                                        <br>
+                                        <button class="btn-primary" type="submit">Update</button>
+                                        <button class="cancel-edit btn-secondary" data-board-id="{{post['board_id']}}">Cancel</button>
+                                    </form>
+                                </div>
+
+                                <!-- Update the Edit Post button -->
+                                <button class="edit-post btn-primary" id="edit_button-{{post['board_id']}}" data-board-id="{{post['board_id']}}">Edit Post</button>
+                            {% endif %}
+
+                            <!-- Only show the delete button if the user is the author or an admin -->
+                            <form class="delete-post delete-post-form" action="{{ url_for('delete_post', board_id=post['board_id']) }}" method="POST">
+                                <input type="hidden" name="page" value="posts"/>
+                                <button class="delete-post delete-post-btn btn-secondary" id="delete_button-{{post['board_id']}}" data-board-id="{{post['board_id']}}">Delete Post</button>
+                            </form>
+
+                        </div>
+                    {% endif %}
+
+                    <div class="comment-form" data-board-id="{{ post['board_id'] }}">
+                        <form method="POST" action="/pythonlogin/add_comment">
+                            <input type="hidden" name="board_id" value="{{ post['board_id'] }}">
+                            <textarea id="comment-{{ post['board_id'] }}" name="comment" maxlength="255" placeholder="Write a comment..."></textarea>
+                            <button type="submit btn-primary">Comment</button>
+                        </form>
+                    </div>
+                    <div id="comments-{{ post['board_id'] }}" class="comments">
+                        {% for comment in post['comments'] %}
+                            <div class="comment" data-comment-id="{{ comment['comment_id'] }}">
+                                <p class="ellipsis"><strong>{{ comment['user_name'] }}</strong> 
+                                    <em> 
+                                        Posted {{ comment['comment_date'] }}{% if comment['comment_date_edited'] %},{% endif %}
+                                    </em>
+                                    {% if comment['comment_date_edited'] %}
+                                    <em> 
+                                        Edited {{ comment['comment_date_edited'] }}
+                                    </em>
+                                    {% endif %}
+                                </p>
+                                <p class="comment_text">{{ comment['comment'] }}</p>
+                                {% if session["user_id"] == comment['user_id'] %}
+                                    <div class="edit-delete-comment">
+                                        <!-- Edit Comment Form -->
+                                        <form action="{{ url_for('edit_comment') }}" method="POST">
+                                            <input type="hidden" name="comment_id" value="{{ comment['comment_id'] }}">
+                                            <button type="submit" class="edit-comment-btn btn-primary" data-comment-id="{{ comment['comment_id'] }}">Edit</button>
+                                        </form>
+                        
+                                        <!-- Delete Comment Form -->
+                                        <form class="delete-comment-form" action="{{ url_for('delete_comment') }}" method="POST">
+                                            <input type="hidden" name="comment_id" value="{{ comment['comment_id'] }}">
+                                            <button type="button" class="delete-comment-btn btn-secondary" data-comment-id="{{ comment['comment_id'] }}">Delete</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                                <div class="col-12">
+                                    <button class="comment_like-btn" data-comment-id="{{comment['comment_id']}}">Like</button>
+                                    <span id="comment_likes-{{ comment['comment_id'] }}">{{ comment['comment_likes_count'] or 0 }}</span>
+                                    <button class="comment_dislike-btn" data-comment-id="{{comment['comment_id']}}">Dislike</button>
+                                    <span id="comment_dislikes-{{ comment['comment_id'] }}">{{ comment['comment_dislikes_count'] or 0 }}</span>                                 
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>                                                                                                                   
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p class="No_Posts">No brags yet. Be the first to brag!</p>
+{% endif %}
+
+
+{% block script %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+document.querySelectorAll(".edit-post").forEach(function (button) {
+    button.addEventListener("click", function () {
+        const boardId = button.getAttribute("data-board-id");
+        document.getElementById("edit-form-" + boardId).style.display = "block";
+        document.getElementById("edit_button-" + boardId).style.display = "none";
+    });
+});
+
+document.querySelectorAll(".cancel-edit").forEach(function (button) {
+    button.addEventListener("click", function () {
+        const boardId = button.getAttribute("data-board-id");
+        document.getElementById("edit-form-" + boardId).style.display = "none";
+        document.getElementById("edit_button-" + boardId).style.display = "block";
+    });
+});
+
+document.querySelectorAll(".edit-form").forEach(function (form) {
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const boardId = form.getAttribute("data-board-id");
+        submitEditForm(boardId);
+    });
+});
+
+function submitEditForm(boardId) {
+    const title = document.getElementById("edit-title-" + boardId).value;
+    const brag = document.getElementById("edit-brag-" + boardId).value;
+
+    const formData = new FormData();
+    formData.append("board_id", boardId);
+    formData.append("title", title);
+    formData.append("brag", brag);
+
+    const imageFile = document.getElementById("edit-image-" + boardId).files[0];
+    if (imageFile) {
+        formData.append("image", imageFile);
+    }
+
+    fetch("/pythonlogin/edit_post", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            // Update the post title and brag
+            const postTitleElement = document.querySelector("#post-title-" + boardId);
+            const postBragElement = document.querySelector("#post-brag-" + boardId);
+
+            if (postTitleElement) {
+                postTitleElement.textContent = title;
+            }
+
+            if (postBragElement) {
+                postBragElement.textContent = brag;
+                console.log(postBragElement);
+            }
+            
+
+            // Update the images
+            const imageFilenames = data.image_filenames;
+            console.log(imageFilenames);
+            // Remove all existing images for the post
+            const existingImages = document.querySelectorAll("#post-" + boardId + " .carousel-item");
+            existingImages.forEach(element => element.remove());
+
+            const existingImage = document.querySelectorAll("#post-image-" + boardId + "-0");
+            existingImage.forEach(element => element.remove());
+
+            const carouselContainer = document.querySelector("#carousel-inner-" + boardId);
+            const singleContainer = document.querySelector("#post_single-" + boardId);
+            console.log(carouselContainer);
+            console.log(singleContainer);
+            
+            if (imageFilenames.length > 1) {
+                // If more than one image, ensure carousel is shown and append images
+                if (carouselContainer) {
+                    carouselContainer.style.display = "block";
+                }
+
+                imageFilenames.forEach((filename, index) => {
+                    const newImageElement = document.createElement("img");
+                    newImageElement.src = "{{ url_for('static', filename='post_images/') }}" + filename;
+                    newImageElement.id = "post-image-" + boardId + "-" + index;
+                    newImageElement.alt = "Slide " + (index + 1);
+                    newImageElement.classList.add("carousel-image");
+
+                    const carouselInner = document.querySelector("#post-" + boardId + " .carousel-inner");
+                    const carouselItem = document.createElement("div");
+                    carouselItem.classList.add("carousel-item");
+
+                    //console.log(newImageElement);
+                    if (index === 0) carouselItem.classList.add("active");
+                    carouselItem.appendChild(newImageElement);
+                    carouselInner.appendChild(carouselItem);
+                });
+
+            } else if (imageFilenames.length === 1) {
+                console.log("1");
+                // If only one image, hide the carousel and show a single image
+                if (carouselContainer) {
+                    carouselContainer.style.display = "none";
+                    console.log("2");
+                }
+
+                const newImageElement = document.createElement("img");
+                newImageElement.src = "{{ url_for('static', filename='post_images/') }}" + imageFilenames[0];
+                newImageElement.id = "post-image-" + boardId + "-0";
+                newImageElement.alt = "Slide 1";
+                newImageElement.classList.add("img", "image-fit");
+
+                console.log(newImageElement);
+                console.log("3.5");
+                console.log(singleContainer);
+
+                singleContainer.appendChild(newImageElement);
+                console.log("3");
+
+
+            } else {
+                // If no images, hide the carousel
+                if (carouselContainer) {
+                    carouselContainer.style.display = "none";
+                }
+            }
+
+            // Hide the edit form and show the post
+            document.getElementById("edit-form-" + boardId).style.display = "none";
+            document.getElementById("edit_button-" + boardId).style.display = "block";
+        } else {
+            alert("An error occurred while updating the post.");
+        }
+    })
+    .catch(error => {
+        alert("An unexpected error occurred. Please try again later.");
+    });
+}
+    
+
+$(document).ready(function () {
+    // Attach delete handler to existing delete post buttons
+    $(".delete-post-btn").click(handleDeletePost);
+});
+
+// Function to handle deletion of posts
+function handleDeletePost(event) {
+    event.preventDefault();
+    
+    console.log(this);
+    
+    var postElement = $(this).closest(".post");
+    console.log(postElement);
+    var boardId = $(this).attr("data-board-id");
+    console.log(boardId);
+
+    if (confirm("Are you sure you want to delete this post?")) {
+        $.ajax({
+            type: "POST",
+            url: "{{url_for('delete_post')}}",
+            data: {
+                board_id: boardId,
+                page: 'posts'
+            },
+            success: function (response) {
+                postElement.remove();
+                console.log(response);
+
+                // Check if there are no more posts left on the page
+                if ($(".post").length === 0) {
+                    // Display the message if no posts remain
+                    $("<p class='No_Posts'>No brags yet. Be the first to brag!</p>").appendTo("body"); // Or any other appropriate container
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                alert("An error occurred while deleting the post.");
+            },
+        });
+    }
+};
+
+document.querySelectorAll(".like-btn, .dislike-btn").forEach(function (button) {
+    button.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        var board_id = button.getAttribute("data-board-id");
+        var like = button.classList.contains("like-btn");
+
+        $.ajax({
+            type: "GET",
+            url: "/pythonlogin/like_post",
+            data: { board_id: board_id, like: like },
+            success: function (response) {
+                $("#likes-" + board_id).text(response.likes);
+                $("#dislikes-" + board_id).text(response.dislikes);
+            },
+            error: function (error) {
+                console.log(error);
+            },
+        });
+    });
+});
+
+
+document.querySelectorAll(".comment_like-btn, .comment_dislike-btn").forEach(function (button) {
+    button.addEventListener("click", function handleLikeDislike(event) {
+        event.preventDefault();
+
+        var comment_id = this.getAttribute("data-comment-id");
+        var comment_like = this.classList.contains("comment_like-btn");
+
+        console.log("i am being pressed");
+
+        $.ajax({
+            type: "GET",
+            url: "/pythonlogin/like_comment",
+            data: { comment_id: comment_id, comment_like: comment_like },
+            success: function (response) {
+                $("#comment_likes-" + comment_id).text(response.comment_likes);
+                $("#comment_dislikes-" + comment_id).text(response.comment_dislikes);
+            },
+            error: function (error) {
+                console.log(error);
+            },
+        });
+    });
+});
+
+function handleLikeDislike(){
+    var comment_id = this.getAttribute("data-comment-id");
+    var comment_like = this.classList.contains("comment_like-btn");
+
+    console.log("i am being pressed");
+
+    $.ajax({
+        type: "GET",
+        url: "/pythonlogin/like_comment",
+        data: { comment_id: comment_id, comment_like: comment_like },
+        success: function (response) {
+            $("#comment_likes-" + comment_id).text(response.comment_likes);
+            $("#comment_dislikes-" + comment_id).text(response.comment_dislikes);
+        },
+        error: function (error) {
+            console.log(error);
+        },
+    });
+}
+
+
+document.querySelectorAll(".comment-form").forEach(function (form) {
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const boardId = form.getAttribute("data-board-id");
+        const commentElement = document.getElementById("comment-" + boardId);
+        const comment = commentElement.value;
+
+        const formData = new FormData();
+        formData.append("board_id", boardId);
+        formData.append("comment", comment);
+
+        // Now use formData in the AJAX request
+        $.ajax({
+            type: "POST",
+            url: "/pythonlogin/add_comment",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                // Create a new comment element
+                const newComment = document.createElement("div");
+                newComment.classList.add("comment");
+                newComment.innerHTML = `
+                    <p class="ellipsis"><strong>${data.user_name}</strong> <em> Posted ${data.comment_date}</em></p>
+                    <p>${data.comment}</p>
+                `;
+
+                newComment.setAttribute("data-comment-id", data.comment_id);
+
+                // Append the new comment to the corresponding post
+                const commentsSection = document.querySelector(`#comments-${boardId}`);
+                commentsSection.appendChild(newComment);
+
+                // Clear the comment input field
+                commentElement.value = "";
+
+                // Only show the delete button if the user is the author or an admin
+                const userId = "{{ session['user_id'] }}";
+                if (userId == data.user_id) {
+                    const editForm = document.createElement("div");
+                    editForm.classList.add("delete-comment-form");
+                    editForm.innerHTML = `
+                    <form action="{{ url_for('edit_comment') }}" method="POST">
+                        <input type="hidden" name="comment_id" value="${data.comment_id}">
+                        <button type="submit" class="edit-comment-btn btn-primary">Edit</button>
+                    </form>
+                    `;
+                    newComment.appendChild(editForm);
+
+                    const editButton = newComment.querySelector(".edit-comment-btn");
+                    if (editButton) {
+                        editButton.addEventListener("click", handleEditComment);
+                    }
+
+
+                    const deleteForm = document.createElement("div");
+                    deleteForm.classList.add("delete-comment-form");
+                    deleteForm.innerHTML = `
+                        <form action="{{ url_for('delete_comment') }}" method="POST">
+                            <input type="hidden" name="comment_id" value="${data.comment_id}">
+                            <button type="button" class="delete-comment-btn btn-secondary">Delete</button>
+                        </form>
+                    `;
+                    newComment.appendChild(deleteForm);
+
+                    const deleteButton = newComment.querySelector(".delete-comment-btn");
+                    if (deleteButton) {
+                        deleteButton.addEventListener("click", handleDeleteComment);
+                    }
+                }
+
+                // Add the like and dislike buttons to the new comment
+                const likeDislikeContainer = document.createElement("div");
+                likeDislikeContainer.classList.add("like-dislike-container");
+                likeDislikeContainer.innerHTML = `
+                    <button class="comment_like-btn" data-comment-id="${data.comment_id}">Like</button>
+                    <span id="comment_likes-${data.comment_id}">0</span>
+                    <button class="comment_dislike-btn" data-comment-id="${data.comment_id}">Dislike</button>
+                    <span id="comment_dislikes-${data.comment_id}">0</span>
+                `;
+                newComment.appendChild(likeDislikeContainer);
+
+                // Attach the click event to the newly added like and dislike buttons
+                likeDislikeContainer.querySelector(".comment_like-btn").addEventListener("click", handleLikeDislike);
+                likeDislikeContainer.querySelector(".comment_dislike-btn").addEventListener("click", handleLikeDislike);
+            },
+            error: function (error) {
+                console.error("Error:", error);
+            },
+        });
+    });
+});
+
+
+$(document).ready(function () {
+    // Attach delete handler to existing delete buttons
+    $(".delete-comment-btn").click(handleDeleteComment);
+});
+
+// Function to handle deletion of comments
+function handleDeleteComment(event) {
+    event.preventDefault();
+    
+    var commentElement = $(this).closest(".comment");
+    console.log(commentElement)
+    var commentId = commentElement.attr("data-comment-id");
+    console.log(commentId);  // Debug: print the retrieved comment_id to console
+
+    if (confirm("Are you sure you want to delete this comment?")) {
+        $.ajax({
+            type: "POST",
+            url: "/pythonlogin/delete_comment",
+            data: `comment_id=${commentId}`,  // This sends the data as form data
+            success: function (response) {
+                commentElement.remove();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                alert("An error occurred while deleting the comment.");
+            },
+        });
+    }
+};
+
+document.querySelectorAll(".edit-comment-btn").forEach(function (button) {
+    button.addEventListener("click", handleEditComment);
+});
+
+function handleEditComment(event) {
+    
+    event.preventDefault();
+
+    const commentElement = event.target.closest(".comment");
+    const commentContentElement = commentElement.querySelectorAll("p")[1]; // Assuming the comment content is inside a <p> tag
+
+    if (event.target.innerText === "Edit") {
+        // Switch to edit mode
+        event.target.innerText = "Save";
+        var commentText = commentContentElement.innerText;
+        commentContentElement.innerHTML = `<input type="text" class="edit-comment-input" value="${commentText}">`;
+    } else {
+        // Save changes
+        event.target.innerText = "Edit";
+        var newComment = commentElement.querySelector(".edit-comment-input").value;
+        commentContentElement.innerText = newComment;
+
+        var commentId = commentElement.getAttribute("data-comment-id");
+        console.log(commentId)
+
+        var formData = new FormData();
+        formData.append('comment_id', commentId);
+        formData.append('new_comment', newComment);
+
+        $.ajax({
+            type: "POST",
+            url: "/pythonlogin/edit_comment",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                console.log(response);
+                // Get the date paragraph and update it
+                const dateParagraph = commentElement.querySelectorAll("p")[0];
+                dateParagraph.innerHTML = `<strong>${response.user_id}</strong> 
+                    <em> Posted ${response.comment_date}, Edited ${response.comment_date_edited}</em>`;
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                alert("An error occurred while editing the comment.");
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    {% for post in tblboard %}
+
+        {% if post['image']|length > 1 %} 
+
+            var carouselId = 'post_carousel-' + {{ loop.index }}; 
+            var myCarousel = document.querySelector('#' + carouselId);
+            
+            if(myCarousel) { 
+
+                var progressBar = myCarousel.querySelector('.carousel-progress-bar');
+                var carousel = new bootstrap.Carousel(myCarousel, {
+                    interval: 5000, // Assuming total time = transition time + 600ms slide transition time.
+                    wrap: true
+                });
+
+                // If this is the first carousel, reset its progress bar
+                if ({{ loop.index }} === 1) {
+                    progressBar.style.transition = "none";
+                    progressBar.style.width = '0%';
+                    progressBar.offsetHeight; // Force a repaint
+                    progressBar.style.transition = "width 4.3s linear"; // Adjust this time if necessary
+                }
+
+                // Initialize the progress bar animation on load
+                progressBar.style.width = '100%';
+
+                // Event triggered when a new slide starts transitioning
+                myCarousel.addEventListener('slide.bs.carousel', function () {
+                    console.log('slide.bs.carousel event for', carouselId, 'fired!');
+                    progressBar.style.transition = "none"; // Disable transition
+                    progressBar.style.width = '0%';        // Reset width immediately
+                    progressBar.offsetHeight;               // Force repaint
+                });
+
+                // Event triggered when a new slide has finished transitioning
+                myCarousel.addEventListener('slid.bs.carousel', function () {
+                    console.log('slid.bs.carousel event for', carouselId, 'fired!');
+                    progressBar.style.transition = "width 4.3s linear"; // Adjust this time if necessary
+                    progressBar.style.width = '100%';                 // Set width to full immediately
+                });
+
+            } else {
+                console.warn('Carousel not found:', carouselId);
+            }
+
+        {% endif %}
+        
+    {% endfor %}
+
+    // New code to remove focus after clicking
+    var controls = document.querySelectorAll('.carousel-control-prev, .carousel-control-next');
+    controls.forEach(function(control) {
+        control.addEventListener('click', function() {
+            control.blur();
+        });
+    });
+});
+
+function validateFiles(inputFile) {
+    var maxFiles = 5;
+    if (inputFile.files.length > maxFiles) {
+        inputFile.setCustomValidity('You can only upload a maximum of 5 images.');
+        inputFile.reportValidity();
+    } else {
+        inputFile.setCustomValidity('');
+    }
+}
+
+</script>
+{% endblock %}
+{% endblock %}
