@@ -46,10 +46,6 @@
         <br>
         <input type="submit" value="Submit">
     </form>
-
-    {% if msg5 %}
-        <div class="msg2">{{ msg5 }}</div>
-    {% endif %}
 </div>
 
 {% if tblboard %}
@@ -105,7 +101,6 @@
                             <div class="carousel-progress">
                                 <div class="carousel-progress-bar"></div>
                             </div>                       
-                    
                             <!-- Carousel items -->
                             <div class="carousel-inner">
                                 {% for image_filename in post['image'] %}
@@ -116,19 +111,16 @@
                                     </div>
                                 {% endfor %}
                             </div>
-                    
                             <!-- Previous control -->
                             <a class="carousel-control-prev" style="color: black;" href="#post_carousel-{{ loop.index }}" role="button" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Previous</span>
                             </a>
-                    
                             <!-- Next control -->
                             <a class="carousel-control-next" style="color: black;" href="#post_carousel-{{ loop.index }}" role="button" data-bs-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden">Next</span>
                             </a>
-
                             <!-- Carousel indicators -->
                             <ol class="carousel-indicators" style="padding-top: 10px;">
                                 {% for image_filename in post['image'] %}
@@ -137,11 +129,13 @@
                             </ol>
                         </div>
                     </div>
-                    {% elif post['image']|length == 1 %}
+                {% elif post['image']|length == 1 %}
                     <div id="post_single-{{post['board_id']}}">
                         <img class="img image-fit" src="{{ url_for('static', filename='post_images/' + post['image'][0]) }}" id="post-image-{{ post['board_id'] }}-0" />
                     </div>
-                    {% endif %}                                                         
+                {% else %}
+                    <div id="post_single-{{post['board_id']}}"></div>
+                {% endif %}                                                                         
                 
                     <div class="col-12">
                         <button class="like-btn" data-board-id="{{post['board_id']}}" data-action-status="true">Like</button>
@@ -157,13 +151,13 @@
                     <hr />
                     <!-- Print the values -->
 
-                    {% if session["user_id"] == post['user_id'] or session["role_id"] == 1 %}
+                    {% if session["user_id"] == post['user_id'] or session["role_id"] == 1 or session["role_id"] == 2 %}
                         <div class="col-6">
                             <!-- Add this hidden edit form inside the loop for posts -->
                             {% if session["user_id"] == post['user_id'] %}
                                 <div class="edit-form-container" id="edit-form-{{post['board_id']}}" style="display:none;">
                                     <h3>Edit Post</h3>
-                                    <form class="edit-form" data-board-id="{{post['board_id']}}" enctype="multipart/form-data">
+                                    <form class="edit-form" data-board-id="{{post['board_id']}}" enctype="multipart/form-data"> 
                                         <label for="edit-title-{{post['board_id']}}">Title Of Post:</label>
                                         <br>
                                         <input type="text" id="edit-title-{{post['board_id']}}" value="{{post['title']}}" maxlength="50" required>
@@ -182,7 +176,7 @@
                                         <br>
                                         <br>
                                         <button class="btn-primary" type="submit">Update</button>
-                                        <button class="cancel-edit btn-secondary" data-board-id="{{post['board_id']}}">Cancel</button>
+                                        <button class="cancel-edit btn-secondary" type="button" data-board-id="{{post['board_id']}}">Cancel</button>
                                     </form>
                                 </div>
 
@@ -203,9 +197,12 @@
                         <form method="POST" action="/pythonlogin/add_comment">
                             <input type="hidden" name="board_id" value="{{ post['board_id'] }}">
                             <textarea id="comment-{{ post['board_id'] }}" name="comment" maxlength="255" placeholder="Write a comment..."></textarea>
-                            <button type="submit btn-primary">Comment</button>
+                            <div style="display: none; flex-direction: row;"> <!-- Initial display set to 'none' -->
+                                <button type="button" class="btn-cancel btn-secondary" disabled style="width: 49%; margin-right: 1% !important;">Cancel</button>
+                                <button type="submit" class="btn-comment btn-primary" disabled style="width: 49%; margin-left: 1% !important;">Comment</button>                                
+                            </div>
                         </form>
-                    </div>
+                    </div>                                                     
                     <div id="comments-{{ post['board_id'] }}" class="comments">
                         {% for comment in post['comments'] %}
                             <div class="comment" data-comment-id="{{ comment['comment_id'] }}">
@@ -280,6 +277,7 @@ document.querySelectorAll(".edit-form").forEach(function (form) {
     });
 });
 
+
 function submitEditForm(boardId) {
     const title = document.getElementById("edit-title-" + boardId).value;
     const brag = document.getElementById("edit-brag-" + boardId).value;
@@ -308,16 +306,13 @@ function submitEditForm(boardId) {
             if (postTitleElement) {
                 postTitleElement.textContent = title;
             }
-
             if (postBragElement) {
                 postBragElement.textContent = brag;
-                console.log(postBragElement);
             }
-            
 
             // Update the images
             const imageFilenames = data.image_filenames;
-            console.log(imageFilenames);
+            
             // Remove all existing images for the post
             const existingImages = document.querySelectorAll("#post-" + boardId + " .carousel-item");
             existingImages.forEach(element => element.remove());
@@ -326,16 +321,11 @@ function submitEditForm(boardId) {
             existingImage.forEach(element => element.remove());
 
             const carouselContainer = document.querySelector("#carousel-inner-" + boardId);
-            const singleContainer = document.querySelector("#post_single-" + boardId);
-            console.log(carouselContainer);
-            console.log(singleContainer);
-            
+
             if (imageFilenames.length > 1) {
-                // If more than one image, ensure carousel is shown and append images
                 if (carouselContainer) {
                     carouselContainer.style.display = "block";
                 }
-
                 imageFilenames.forEach((filename, index) => {
                     const newImageElement = document.createElement("img");
                     newImageElement.src = "{{ url_for('static', filename='post_images/') }}" + filename;
@@ -347,18 +337,23 @@ function submitEditForm(boardId) {
                     const carouselItem = document.createElement("div");
                     carouselItem.classList.add("carousel-item");
 
-                    //console.log(newImageElement);
                     if (index === 0) carouselItem.classList.add("active");
                     carouselItem.appendChild(newImageElement);
                     carouselInner.appendChild(carouselItem);
                 });
-
             } else if (imageFilenames.length === 1) {
-                console.log("1");
-                // If only one image, hide the carousel and show a single image
                 if (carouselContainer) {
                     carouselContainer.style.display = "none";
-                    console.log("2");
+                }
+
+                let singleContainer = document.querySelector("#post_single-" + boardId);
+                if (!singleContainer) {
+                    singleContainer = document.createElement("div");
+                    singleContainer.id = "post_single-" + boardId;
+                    const postContainer = document.getElementById("post-" + boardId);
+                    if (postContainer) {
+                        postContainer.appendChild(singleContainer);
+                    }
                 }
 
                 const newImageElement = document.createElement("img");
@@ -366,25 +361,11 @@ function submitEditForm(boardId) {
                 newImageElement.id = "post-image-" + boardId + "-0";
                 newImageElement.alt = "Slide 1";
                 newImageElement.classList.add("img", "image-fit");
-
-                console.log(newImageElement);
-                console.log("3.5");
-                console.log(singleContainer);
-
                 singleContainer.appendChild(newImageElement);
-                console.log("3");
-
-
-            } else {
-                // If no images, hide the carousel
-                if (carouselContainer) {
-                    carouselContainer.style.display = "none";
-                }
             }
 
             // Update the edit time if provided in the response data
             if (data.date_edited) {
-
                 // Remove the specific 'Time Edit:' row if it exists
                 const oldEditedTimeDiv = document.querySelector(`#post-${boardId} #old-date-edited`);
                 if (oldEditedTimeDiv) {
@@ -413,15 +394,18 @@ function submitEditForm(boardId) {
             // Hide the edit form and show the post
             document.getElementById("edit-form-" + boardId).style.display = "none";
             document.getElementById("edit_button-" + boardId).style.display = "block";
+
+            console.log("hi9");
         } else {
-            alert("An error occurred while updating the post.");
+            alert("Error: " + data.error);
         }
     })
     .catch(error => {
-        alert("An unexpected error occurred. Please try again later.");
+        console.error('Error:', error);
+        alert("An error occurred.");
     });
 }
-    
+
 
 $(document).ready(function () {
     // Attach delete handler to existing delete post buttons
@@ -533,19 +517,70 @@ function handleLikeDislike(){
 }
 
 
-document.querySelectorAll(".comment-form").forEach(function (form) {
-    form.addEventListener("submit", function (event) {
+// Function to toggle the state of the buttons based on textarea content
+function toggleButtonsState(textarea) {
+    const hasContent = textarea.value.trim() !== ""; // Check if textarea is not empty
+    const buttonsContainer = textarea.nextElementSibling;
+    const cancelButton = buttonsContainer.querySelector(".btn-cancel");
+    const commentButton = buttonsContainer.querySelector(".btn-comment");
+
+    if (hasContent) {
+        cancelButton.removeAttribute("disabled");
+        commentButton.removeAttribute("disabled");
+    } else {
+        cancelButton.setAttribute("disabled", "true");
+        commentButton.setAttribute("disabled", "true");
+    }
+}
+
+function toggleButtonsVisibility(textarea, displayValue) {
+    const buttonsContainer = textarea.nextElementSibling;
+    buttonsContainer.style.display = displayValue;
+}
+
+document.querySelectorAll(".comment-form").forEach(function(form) {
+    const boardId = form.getAttribute("data-board-id");
+    const commentElement = document.getElementById("comment-" + boardId);
+
+    // Initially set button states based on textarea content
+    toggleButtonsState(commentElement);
+
+    // Update button states when something is typed into the textarea
+    commentElement.addEventListener("input", function() {
+        toggleButtonsState(commentElement);
+    });
+
+    // Show buttons when textarea is focused
+    commentElement.addEventListener("focus", function(event) {
+        event.stopPropagation();
+        toggleButtonsVisibility(commentElement, "flex");
+    });
+
+    // Hide buttons when "Cancel" is clicked
+    form.querySelector(".btn-cancel").addEventListener("click", function() {
+        commentElement.value = "";
+        toggleButtonsState(commentElement);  // Add this line
+        toggleButtonsVisibility(commentElement, "none");
+    });
+
+    // Hide buttons when "Comment" is clicked
+    form.querySelector(".btn-comment").addEventListener("click", function() {
+        commentElement.value = "";
+        toggleButtonsState(commentElement);  // Add this line
+        toggleButtonsVisibility(commentElement, "none");
+    });
+
+    // AJAX submission of the form
+    form.addEventListener("submit", function(event) {
         event.preventDefault();
 
-        const boardId = form.getAttribute("data-board-id");
-        const commentElement = document.getElementById("comment-" + boardId);
         const comment = commentElement.value;
 
         const formData = new FormData();
         formData.append("board_id", boardId);
         formData.append("comment", comment);
 
-        // Now use formData in the AJAX request
+        // AJAX request
         $.ajax({
             type: "POST",
             url: "/pythonlogin/add_comment",
@@ -610,9 +645,9 @@ document.querySelectorAll(".comment-form").forEach(function (form) {
                 likeDislikeContainer.classList.add("like-dislike-container");
                 likeDislikeContainer.innerHTML = `
                     <button class="comment_like-btn" data-comment-id="${data.comment_id}">Like</button>
-                    <span id="comment_likes-${data.comment_id}">0</span>
+                    <span id="comment_likes-${data.comment_id}">Likes: 0</span>
                     <button class="comment_dislike-btn" data-comment-id="${data.comment_id}">Dislike</button>
-                    <span id="comment_dislikes-${data.comment_id}">0</span>
+                    <span id="comment_dislikes-${data.comment_id}">Dislikes: 0</span>
                 `;
                 newComment.appendChild(likeDislikeContainer);
 
@@ -625,6 +660,21 @@ document.querySelectorAll(".comment-form").forEach(function (form) {
             },
         });
     });
+});
+
+
+document.addEventListener("click", function(event) {
+    if (event.target.closest('.comment-form') || event.target.tagName.toLowerCase() === 'textarea') {
+        // If the click is within a comment-form or on a textarea, show the buttons
+        const textarea = event.target.closest('.comment-form') ? event.target.closest('.comment-form').querySelector('textarea') : event.target;
+        toggleButtonsVisibility(textarea, "flex");
+    } else {
+        // If the click is outside of any comment-form, hide all buttons
+        document.querySelectorAll(".comment-form").forEach(function(form) {
+            const commentElement = form.querySelector('textarea');
+            toggleButtonsVisibility(commentElement, "none");
+        });
+    }
 });
 
 

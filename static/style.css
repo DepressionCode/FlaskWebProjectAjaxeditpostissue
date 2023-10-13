@@ -252,8 +252,8 @@ body.loggedin {
     padding: 10px;
     border-radius: 5px;
     margin-top: 20px;
-    margin-left: 50px;
-    margin-right: 50px;
+    margin-left: 75px;
+    margin-right: 75px;
 }
 
 .msg3 {
@@ -1048,4 +1048,20 @@ textarea {
     margin-right: auto !important;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important; /* Slight shadow for a lifted effect */
     max-width: 950px !important;
+}
+
+/* Styling for disabled buttons */
+.btn-cancel[disabled], .btn-comment[disabled] {
+    background-color: rgba(128, 128, 128, 0.5) !important; /* Grey with 0.5 opacity */
+    cursor: default !important;  /* Regular cursor, not a pointer */
+}
+
+/* Styling for enabled buttons. Adjust if needed. */
+.btn-cancel:not([disabled]), .btn-comment:not([disabled]) {
+    cursor: pointer !important;  /* Makes it clear that the button is clickable */
+}
+
+/* Override hover styles for disabled buttons */
+.btn-cancel[disabled]:hover, .btn-comment[disabled]:hover {
+    background-color: rgba(128, 128, 128, 0.5) !important; /* Maintain the same background color on hover */
 }

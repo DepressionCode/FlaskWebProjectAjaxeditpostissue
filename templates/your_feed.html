@@ -103,7 +103,7 @@
                         <hr />
                         <!-- Print the values -->
 
-                        {% if session["user_id"] == post['user_id'] or session["role_id"] == 1 %}
+                        {% if session["user_id"] == post['user_id'] or session["role_id"] == 1 or session["role_id"] == 2 %}
                             <div class="col-6">
                                 <!-- Add this hidden edit form inside the loop for posts -->
                                 {% if session["user_id"] == post['user_id'] %}
@@ -127,7 +127,7 @@
                                             <br>
                                             <br>
                                             <button class="btn-primary" type="submit">Update</button>
-                                            <button class="cancel-edit btn-secondary" data-board-id="{{post['board_id']}}">Cancel</button>
+                                            <button class="cancel-edit btn-secondary" type="button" data-board-id="{{post['board_id']}}">Cancel</button>
                                         </form>
                                     </div>
 
@@ -150,9 +150,12 @@
                             <form method="POST" action="/pythonlogin/add_comment">
                                 <input type="hidden" name="board_id" value="{{ post['board_id'] }}">
                                 <textarea id="comment-{{ post['board_id'] }}" name="comment" maxlength="255" placeholder="Write a comment..."></textarea>
-                                <button type="submit btn-primary">Comment</button>
+                                <div style="display: flex; justify-content: space-between;"> <!-- added justify-content for even spacing -->
+                                    <button type="button" class="btn-cancel btn-secondary" style="width: 49%; margin-right: 1%;">Cancel</button> <!-- 49% width + 1% margin -->
+                                    <button type="submit" class="btn-primary" style="width: 49%; margin-left: 1%;">Comment</button> <!-- 49% width + 1% margin -->
+                                </div>                                                       
                             </form>
-                        </div>
+                        </div>    
                         <div id="comments-{{ post['board_id'] }}" class="comments">
                             {% for comment in post['comments'] %}
                                 <div class="comment" data-comment-id="{{ comment['comment_id'] }}">
@@ -539,6 +542,12 @@ document.querySelectorAll(".comment-form").forEach(function (form) {
                 console.error("Error:", error);
             },
         });
+    });
+
+    form.querySelector(".btn-cancel").addEventListener("click", function() {
+        const boardId = form.getAttribute("data-board-id");
+        const commentElement = document.getElementById("comment-" + boardId);
+        commentElement.value = "";
     });
 });
 

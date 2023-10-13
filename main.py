@@ -772,9 +772,7 @@ def edit_post():
 
 @app.route("/pythonlogin/delete_post", methods=['POST'])
 def delete_post():
-    print('benis')
     board_id = request.form.get('board_id')
-    print(board_id)
 
     # Connect to the database
     with create_connection() as connection:
@@ -808,7 +806,7 @@ def delete_post():
                         image_filenames = json.loads(post["image"])
                     except json.JSONDecodeError:
                         print("Error decoding image data.")
-                        return redirect(f'/pythonlogin/your_{page}')
+                        return redirect(f'/pythonlogin/your_')
                 
                 # Only attempt to delete image files if they exist
                 if image_filenames:
@@ -912,10 +910,11 @@ def like_post():
 
 @app.route('/pythonlogin/add_comment', methods=['POST'])
 def add_comment():
+    comment = request.form['comment'].strip()  # Get the comment and strip any whitespace
+
     connection = create_connection()  # Initialize the connection variable
 
     try:
-        comment = request.form['comment']
         comment_id = request.form.get('comment_id')
         comment_date = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
         board_id = request.form['board_id']
