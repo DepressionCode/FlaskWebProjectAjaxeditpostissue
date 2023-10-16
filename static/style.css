@@ -843,6 +843,13 @@ textarea {
     line-height: 1.5 !important;
 }
 
+.your-posts-feed-page input[type="text"], .your-posts-feed-page .edit_post_textarea {
+    padding: 10px 15px !important;
+    border-radius: 5px !important;
+    border: 1px solid #d1d5db !important;
+    max-width: 293px !important;
+}
+
 .your-posts-feed-page input[type="text"], .your-posts-feed-page textarea {
     padding: 10px 15px !important;
     border-radius: 5px !important;
@@ -874,9 +881,8 @@ textarea {
 }
 
 .your-posts-feed-page .row {
-    padding: 15px !important;
+    padding: 10px;
     background-color: transparent !important;
-    margin-bottom: 25px !important;
     border-radius: 5px !important;
     display: flex !important;
     position: relative !important;
@@ -918,11 +924,11 @@ textarea {
     max-width: 100% !important; 
 }
 
-@media (max-width: 1000px) {
+@media (min-width: 701px) and (max-width: 1000px) {
     .your-posts-feed-page .col-4, 
     .your-posts-feed-page .col-8 {
-        flex-basis: 100% !important; /* make it take the full width */
-        max-width: 100% !important; /* override the max-width */
+        flex-basis: 100% !important; 
+        max-width: 100% !important;
     }
 
     .responsive-divider {
@@ -932,25 +938,24 @@ textarea {
 
     .your-posts-feed-page .col-4 {
         border-right: 0px !important;
-        display: flex !important; /* Ensure .col-4 behaves like a flex container */
-        align-items: flex-start !important; /* Align content to the start (or left) */
-        justify-content: flex-start !important; /* This will ensure content does not stretch */
+        display: flex !important;
+        align-items: flex-start !important; 
+        justify-content: flex-start !important; 
         background-color: rgb(240, 240, 240) !important;
     }
 
-    /* Image and Info will now take their natural widths and align to the left */
     .col-4 > .row {
-        flex-basis: 100% !important; /* make it take the full width */
-        max-width: 100% !important; /* override the max-width */
+        flex-basis: 100% !important;
+        max-width: 100% !important;
         display: flex !important;
-        align-items: flex-start !important; /* Align content to the start (or left) */
-        justify-content: flex-start !important; /* This will ensure content does not stretch */
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
     }
 
     .col-4 > .row > div {
         flex-basis: auto !important;
         max-width: none !important;
-        display: inline-block !important; /* This will keep them in the same line */
+        display: inline-block !important;
     }
 
     .pfp {
@@ -965,13 +970,11 @@ textarea {
         vertical-align: middle !important;
     }
 
-    /* Resetting the col-6 behavior for labels and info inside .info_posts */
     .your-posts-feed-page .info_posts .col-6 {
-        flex-basis: 100% !important; /* make it take the full width */
-        max-width: 100% !important; /* override the max-width */
+        flex-basis: 100% !important;
+        max-width: 100% !important;
     }
 
-    /* Ensure both columns inside the .col-4 take full width */
     .col-4 > .row > .col-12 {
         flex-basis: 100% !important;
         max-width: 100% !important;
@@ -979,6 +982,312 @@ textarea {
 
     .your-posts-feed-page .col-4 .row {
         margin: 0 !important;
+    }
+
+    .your-posts-feed-page .col-4 {
+        position: relative; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0;
+        margin-top: auto; /* Push to the bottom */
+    }
+
+    .edit_post_button_ajax, .delete_post_button_ajax {
+        flex: 1;
+        max-width: none !important;
+        flex-basis: auto !important;
+    }
+
+    .edit_post_button_ajax button, .delete_post_button_ajax button {
+        max-width: 130px;
+        min-width: 130px;
+    }
+
+    .your-posts-feed-page .col-4 > .col-12 {
+        flex-basis: 100%;
+        max-width: 50% !important;
+        margin-left: auto;
+        flex: 1;
+    }
+
+    .your-posts-feed-page .col-12 .buttons-container {
+        display: flex;
+        justify-content: flex-end;  /* Align the buttons to the right */
+        align-items: center;        /* Center align items vertically */
+        flex-wrap: nowrap;          /* Prevent wrapping */
+        gap: 10px;                  /* Gap between buttons */
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .edit_post_button_ajax, .delete_post_button_ajax {
+        display: flex;  /* Use flex to align the button */
+        justify-content: flex-end;  /* Right-align the buttons inside their container */
+    }
+
+    .posting_container {
+        width: 62.5%;
+    }
+    
+    /* Adjust the flex property for each button container to sit side by side */
+    .edit_post_button_ajax, .delete_post_button_ajax {
+        flex: 0 0 auto;  /* Don't grow, don't shrink, auto basis */
+    }
+
+    /* Reset the width for buttons for better control */
+    .edit_post_button_ajax button, .delete_post_button_ajax button {
+        width: auto;
+        max-width: none;
+    }
+
+    .edit-delete-row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .post-img{
+        width: 35% !important;
+    }
+}
+
+@media (min-width: 448px) and (max-width: 700px) {
+    .your-posts-feed-page .col-4, 
+    .your-posts-feed-page .col-8 {
+        flex-basis: 100% !important; 
+        max-width: 100% !important;
+    }
+
+    .responsive-divider {
+        display: block !important;
+        margin-bottom: 0px !important;
+    }
+
+    .your-posts-feed-page .col-4 {
+        border-right: 0px !important;
+        display: flex !important;
+        align-items: flex-start !important; 
+        justify-content: flex-start !important; 
+        background-color: rgb(240, 240, 240) !important;
+    }
+
+    .col-4 > .row {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+
+    .col-4 > .row > div {
+        flex-basis: auto !important;
+        max-width: none !important;
+        display: inline-block !important;
+    }
+
+    .pfp {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        height: 75px;
+        width: 75px;
+    }
+
+    .info_posts {
+        display: inline-block;
+        vertical-align: middle !important;
+    }
+
+    .your-posts-feed-page .info_posts .col-6 {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .col-4 > .row > .col-12 {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .your-posts-feed-page .col-4 .row {
+        margin: 0 !important;
+    }
+
+    .your-posts-feed-page .col-4 {
+        position: relative; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0;
+        margin-top: auto; /* Push to the bottom */
+    }
+
+    .edit_post_button_ajax, .delete_post_button_ajax {
+        flex: 1;
+        max-width: none !important;
+        flex-basis: auto !important;
+    }
+
+    .edit_post_button_ajax button, .delete_post_button_ajax button {
+        max-width: 130px;
+        min-width: 130px;
+    }
+
+    .your-posts-feed-page .col-4 > .col-12 {
+        flex-basis: 100%;
+        max-width: 50% !important;
+        margin-left: 0 !important;
+        flex: 1;
+    }
+    
+    .posting_container {
+        width: 75%;
+    }
+
+    .edit-delete-row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .your-posts-feed-page .col-12 .buttons-container {
+        display: flex;
+        justify-content: flex-start;  /* Align the buttons to the right */
+        align-items: center;        /* Center align items vertically */
+        flex-wrap: nowrap;          /* Prevent wrapping */
+        gap: 10px;                  /* Gap between buttons */
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .edit_post_button_ajax, .delete_post_button_ajax {
+        display: flex;  /* Use flex to align the button */
+        justify-content: flex-start;  /* Right-align the buttons inside their container */
+    }
+
+    /* Adjust the flex property for each button container to sit side by side */
+    .edit_post_button_ajax, .delete_post_button_ajax {
+        flex: 0 0 auto;  /* Don't grow, don't shrink, auto basis */
+    }
+
+    /* Reset the width for buttons for better control */
+    .edit_post_button_ajax button, .delete_post_button_ajax button {
+        width: auto;
+        max-width: none;
+    }
+}
+
+@media (max-width: 447px) {
+    .posting_container {
+        width: 95%;
+    }
+
+    .your-posts-feed-page input[type="text"], .your-posts-feed-page .edit_post_textarea {
+        max-width: 250px !important;
+    }
+
+    .your-posts-feed-page .col-4, 
+    .your-posts-feed-page .col-8 {
+        flex-basis: 100% !important; 
+        max-width: 100% !important;
+    }
+
+    .responsive-divider {
+        display: block !important;
+        margin-bottom: 0px !important;
+    }
+
+    .your-posts-feed-page .col-4 {
+        border-right: 0px !important;
+        display: flex !important;
+        align-items: flex-start !important; 
+        justify-content: flex-start !important; 
+        background-color: rgb(240, 240, 240) !important;
+    }
+
+    .col-4 > .row {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+
+    .col-4 > .row > div {
+        flex-basis: auto !important;
+        max-width: none !important;
+        display: inline-block !important;
+    }
+
+    .pfp {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        height: 75px;
+        width: 75px;
+    }
+
+    .info_posts {
+        display: inline-block;
+        vertical-align: middle !important;
+    }
+
+    .your-posts-feed-page .info_posts .col-6 {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .col-4 > .row > .col-12 {
+        flex-basis: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .your-posts-feed-page .col-4 .row {
+        margin: 0 !important;
+    }
+
+    .your-posts-feed-page .col-4 {
+        position: relative; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0;
+        margin-top: auto; /* Push to the bottom */
+    }
+
+    .edit_post_button_ajax, .delete_post_button_ajax {
+        flex: 1;
+        max-width: none !important;
+        flex-basis: auto !important;
+    }
+
+    .edit_post_button_ajax button, .delete_post_button_ajax button {
+        max-width: 130px;
+        min-width: 130px;
+    }
+
+    .your-posts-feed-page .col-4 > .col-12 {
+        flex-basis: 100%;
+        max-width: 50% !important;
+        margin-left: 0 !important;
+        flex: 1;
+    }
+
+    .edit-delete-row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .post-img{
+        width: 100% !important;
     }
 }
 
@@ -1025,6 +1334,59 @@ textarea {
     background-color: #e1e1e1 !important;
 }
 
+.your-posts-feed-page .like-btn.liked {
+    background-color: #66df51 !important;
+}
+
+.your-posts-feed-page .like-btn.liked:hover {
+    background-color: #679e5d !important;
+}
+
+.your-posts-feed-page .dislike-btn.disliked {
+    background-color: #d33 !important;
+}
+
+.your-posts-feed-page .dislike-btn.disliked:hover {
+    background-color: #b00 !important;
+}
+
+.your-posts-feed-page .like-btn.liked span,
+.your-posts-feed-page .dislike-btn.disliked span{
+    color: white;  /* This will change the text color */
+}
+
+.your-posts-feed-page .like-btn.liked i,
+.your-posts-feed-page .dislike-btn.disliked i {
+    color: white;  /* This will change the FontAwesome icon color */
+}
+
+.your-posts-feed-page .comment_like-btn.liked {
+    background-color: #66df51 !important;
+}
+
+.your-posts-feed-page .comment_like-btn.liked:hover {
+    background-color: #679e5d !important;
+}
+
+.your-posts-feed-page .comment_dislike-btn.disliked {
+    background-color: #d33 !important;
+}
+
+.your-posts-feed-page .comment_dislike-btn.disliked:hover {
+    background-color: #b00 !important;
+}
+
+.your-posts-feed-page .comment_like-btn.liked span,
+.your-posts-feed-page .comment_dislike-btn.disliked span {
+    color: white;  /* This will change the text color */
+}
+
+.your-posts-feed-page .comment_like-btn.liked i,
+.your-posts-feed-page .comment_dislike-btn.disliked i {
+    color: white;  /* This will change the FontAwesome icon color */
+}
+
+
 .comment-form form {
     display: flex;
     flex-direction: column;
@@ -1063,5 +1425,63 @@ textarea {
 
 /* Override hover styles for disabled buttons */
 .btn-cancel[disabled]:hover, .btn-comment[disabled]:hover {
+    background-color: rgba(128, 128, 128, 0.5) !important; /* Maintain the same background color on hover */
+}
+
+@media (min-width: 1001px) {
+
+    /* Prevent wrapping in the buttons container */
+    .buttons-container {
+        flex-wrap: nowrap; /* Prevent the flex items from wrapping */
+        justify-content: space-between; /* Distribute the buttons with equal spacing */
+        display: flex;
+        justify-content: center;  /* Center the buttons horizontally */
+        align-items: center;      /* Center the buttons vertically, optional based on your needs */
+    }
+
+    /* Adjust the button widths */
+    .edit_post_button_ajax button, .delete_post_button_ajax button {
+        width: auto; 
+        min-width: 120px;
+        max-width: 100%; /* Prevent buttons from growing too wide */
+        box-sizing: border-box; /* Include padding and border in width calculations */
+    }
+
+    /* Adjust the button containers */
+    .edit_post_button_ajax, .delete_post_button_ajax {
+        flex: 1; /* Make the button containers grow and shrink as needed */
+        display: flex; /* Use flex to align the button */
+        justify-content: center; /* Center align the edit button */
+    }
+
+}
+
+.cancel-edit, .submit-edit, .comment-edit, .comment-delete {
+    min-width: 75px;
+}
+
+.edit-delete-comment {
+    display: flex;
+    align-items: center;  /* This will vertically center the buttons if they have different heights */
+    justify-content: flex-end;  /* This will push the buttons to the right side of the flex container */
+}
+
+.edit-delete-comment form:first-child {
+    margin-right: 10px;  /* Add some spacing between the buttons */
+}
+
+/* Styling for disabled buttons */
+.btn-submit[disabled] {
+    background-color: rgba(128, 128, 128, 0.5) !important; /* Grey with 0.5 opacity */
+    cursor: default !important;  /* Regular cursor, not a pointer */
+}
+
+/* Styling for enabled buttons. Adjust if needed. */
+.btn-submit:not([disabled]) {
+    cursor: pointer !important;  /* Makes it clear that the button is clickable */
+}
+
+/* Override hover styles for disabled buttons */
+.btn-submit[disabled]:hover {
     background-color: rgba(128, 128, 128, 0.5) !important; /* Maintain the same background color on hover */
 }

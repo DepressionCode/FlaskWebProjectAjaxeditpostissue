@@ -49,37 +49,33 @@
     
     function toggle_password_visiblity() {
         var x = document.getElementById("password");
-        var y = document.getElementById("show_hide_password")
+        var y = document.getElementById("show_hide_password");
         if (x.type === "password") {
             x.type = "text";
-            y.value = "Hide Password"
+            y.value = "Hide Password";
         } else {
             x.type = "password";
-            y.value = "Show Password"
+            y.value = "Show Password";
         }
     }
-
+    
     function checkEmailFormat() {
-    let email = document.getElementById("email").value;
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', '{{ url_for("check_email_format") }}', true);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.onload = function() {
-        if (this.status == 200) {
-            let response = JSON.parse(this.responseText);
-            let messageDiv = document.getElementById("emailValidationMessage");
-            if (response.valid) {
-                messageDiv.innerHTML = "Valid Email Format!";
-                messageDiv.style.backgroundColor = "green";
-                messageDiv.style.color = "white";
-                messageDiv.style.padding = "10px";
-                messageDiv.style.borderRadius = "5px";
-                messageDiv.style.marginTop = "20px";
-                messageDiv.style.marginLeft = "110px";
-                messageDiv.style.marginRight = "110px";
-            } else {
-                messageDiv.innerHTML = "Invalid Email Format!";
-                messageDiv.style.backgroundColor = "red";
+        let email = document.getElementById("email").value;
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("check_email_format") }}', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (this.status == 200) {
+                let response = JSON.parse(this.responseText);
+                let messageDiv = document.getElementById("emailValidationMessage");
+                if (response.valid) {
+                    messageDiv.innerHTML = "Valid Email Format!";
+                    messageDiv.style.backgroundColor = "green";
+                } else {
+                    messageDiv.innerHTML = "Invalid Email Format!";
+                    messageDiv.style.backgroundColor = "red";
+                }
+                // Common styles
                 messageDiv.style.color = "white";
                 messageDiv.style.padding = "10px";
                 messageDiv.style.borderRadius = "5px";
@@ -87,18 +83,32 @@
                 messageDiv.style.marginLeft = "110px";
                 messageDiv.style.marginRight = "110px";
             }
-        }
-    };
-    xhr.send('email=' + email);
+        };
+        xhr.send('email=' + email);
     }
-
+    
     document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("password").addEventListener("focus", function() {
-            document.getElementById("show_hide_password").style.display = "inline-block";
-        });
+        var passwordField = document.getElementById("password");
+        var showHideBtn = document.getElementById("show_hide_password");
         
-        document.getElementById("password").addEventListener("input", function() {
-            document.getElementById("show_hide_password").style.display = "inline-block";
+        passwordField.addEventListener("focus", function() {
+            if (passwordField.value) {
+                showHideBtn.style.display = "inline-block";
+            }
+        });
+    
+        passwordField.addEventListener("input", function() {
+            if (passwordField.value) {
+                showHideBtn.style.display = "inline-block";
+            } else {
+                showHideBtn.style.display = "none";
+            }
+        });
+    
+        passwordField.addEventListener("blur", function() {
+            if (!passwordField.value) {
+                showHideBtn.style.display = "none";
+            }
         });
     });  
 

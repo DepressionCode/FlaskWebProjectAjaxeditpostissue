@@ -10,6 +10,9 @@ import hashlib
 import random
 import uuid
 import json
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'jfif', 'gif'}
 app = Flask(__name__)
@@ -446,7 +449,7 @@ def your_feed():
                     ORDER BY tblboard.date DESC
                 """)
                 posts = cursor.fetchall()
-
+                
                 for post in posts:
                     image_data = post.get('image')  # get the image data from the post
                     try:
@@ -501,6 +504,14 @@ def your_feed():
                         comment_likes_dislikes = cursor.fetchone()
                         comment["comment_likes"] = comment_likes_dislikes["comment_likes_count"] or 0
                         comment["comment_dislikes"] = comment_likes_dislikes["comment_dislikes_count"] or 0
+                        
+                        cursor.execute("SELECT * FROM tblcommentpostlikes WHERE user_id = %s", session["user_id"])
+                        ld_comments = cursor.fetchall()
+                        yc = ""
+                        for ic in ld_comments:
+                            xc = str(ic['comment_id'])
+                            zc = str(ic["comment_likes"])
+                            yc = yc + ","+ xc + "-" + zc
 
                     post["comments"] = comments
 
@@ -517,6 +528,14 @@ def your_feed():
                     likes_dislikes = cursor.fetchone()
                     post["likes"] = likes_dislikes["likes_count"] or 0
                     post["dislikes"] = likes_dislikes["dislikes_count"] or 0
+                    
+                    cursor.execute("SELECT * FROM tblpostlikes WHERE user_id = %s", session["user_id"])
+                    ld_posts = cursor.fetchall()
+                    y = ""
+                    for i in ld_posts:
+                        x = str(i['board_id'])
+                        z = str(i["likes"])
+                        y = y + ","+ x + "-" + z
 
                     p = format_date(post['date'])
                     post['date'] = p
@@ -534,7 +553,7 @@ def your_feed():
         post = {}  # Initialize post as an empty dictionary
 
         # User is loggedin show them the your_feed page
-        return render_template("your_feed.html", tblboard=posts, accounts=accounts, data=user, post=post, username=session['user_name'])
+        return render_template("your_feed.html", tblboard=posts, accounts=accounts, data=user, post=post, comment=comment, username=session['user_name'], ld_posts=y, ld_comments=yc)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
@@ -607,6 +626,11 @@ def your_posts():
                     ORDER BY tblboard.date DESC
                 """, (session["user_id"],))  # Pass in the logged-in user's ID
                 posts = cursor.fetchall()
+                
+                comments = []
+                comment = {}  # Initialize comment as an empty dictionary
+                y = ""
+                yc = ""
 
                 for post in posts:
                     image_data = post.get('image')  # get the image data from the post
@@ -662,6 +686,14 @@ def your_posts():
                         comment_likes_dislikes = cursor.fetchone()
                         comment["comment_likes"] = comment_likes_dislikes["comment_likes_count"] or 0
                         comment["comment_dislikes"] = comment_likes_dislikes["comment_dislikes_count"] or 0
+                        
+                        cursor.execute("SELECT * FROM tblcommentpostlikes WHERE user_id = %s", session["user_id"])
+                        ld_comments = cursor.fetchall()
+                        yc = ""
+                        for ic in ld_comments:
+                            xc = str(ic['comment_id'])
+                            zc = str(ic["comment_likes"])
+                            yc = yc + ","+ xc + "-" + zc
 
                     post["comments"] = comments
 
@@ -678,6 +710,15 @@ def your_posts():
                     likes_dislikes = cursor.fetchone()
                     post["likes"] = likes_dislikes["likes_count"] or 0
                     post["dislikes"] = likes_dislikes["dislikes_count"] or 0
+                    
+                    cursor.execute("SELECT * FROM tblpostlikes WHERE user_id = %s", session["user_id"])
+                    ld_posts = cursor.fetchall()
+                    y = ""
+                    for i in ld_posts:
+                        x = str(i['board_id'])
+                        z = str(i["likes"])
+                        y = y + ","+ x + "-" + z
+                    
 
                     p = format_date(post['date'])
                     post['date'] = p
@@ -695,7 +736,7 @@ def your_posts():
         post = {}  # Initialize post as an empty dictionary
 
         # User is loggedin show them the your_feed page
-        return render_template("your_posts.html", tblboard=posts, accounts=accounts, data=user, post=post, username=session['user_name'])
+        return render_template("your_posts.html", tblboard=posts, accounts=accounts, data=user, post=post, comment=comment, username=session['user_name'], ld_posts=y, ld_comments=yc)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
@@ -794,7 +835,7 @@ def delete_post():
                 return redirect(f'/pythonlogin/your_{page}')
 
             # Check if the user is allowed to delete the post
-            if session['user_id'] != post['user_id'] and session['role_id'] != 1:
+            if session['user_id'] != post['user_id'] and session['role_id'] != 1 and session['role_id'] != 2:
                 print("You are not authorized to delete this post.")
                 return redirect(f'/pythonlogin/your_{page}')
 
@@ -851,10 +892,10 @@ def delete_post():
     )
 
 
-@app.route("/pythonlogin/like_post", methods=["GET"])
+@app.route("/pythonlogin/like_post", methods=["POST"])
 def like_post():
-    board_id = request.args.get("board_id")
-    like = request.args.get("like", "false")  # default to "false" if "like" argument is not provided
+    board_id = request.form.get("board_id")
+    like = request.form.get("like", "false")
     like = True if like.lower() == 'true' else False
     user_id = session["user_id"]
 
@@ -884,28 +925,40 @@ def like_post():
                         (1 if like else 0, 0 if like else 1, user_id, board_id)
                     )
             else:
-                print('interesting')
                 try:
                     cursor.execute(
                         "INSERT INTO tblpostlikes (board_id, user_id, likes, dislikes) VALUES (%s, %s, %s, %s)",
                         (board_id, user_id, 1 if like else 0, 0 if like else 1)
                     )
-                    print("INSERT INTO tblpostlikes (board_id, user_id, likes, dislikes) VALUES (%s, %s, %s, %s)" % (board_id, user_id, 1 if like else 0, 0 if like else 1))
                 except IntegrityError:
                     cursor.execute(
                         "UPDATE tblpostlikes SET likes = %s, dislikes = %s WHERE user_id = %s AND board_id = %s",
                         (1 if like else 0, 0 if like else 1, user_id, board_id)
                     )
-            
+
             connection.commit()
 
             # Fetch the updated like and dislike counts for this post
             cursor.execute("SELECT SUM(likes) as likes_count, SUM(dislikes) as dislikes_count FROM tblpostlikes WHERE board_id = %s", (board_id,))
             counts = cursor.fetchone()
+            
+            # Fetch user's action on this post after the above operations
+            cursor.execute("SELECT likes, dislikes FROM tblpostlikes WHERE user_id = %s AND board_id = %s", (user_id, board_id))
+            user_action = cursor.fetchone()
+
         likes_count = 0 if counts["likes_count"] is None else int(counts["likes_count"])
         dislikes_count = 0 if counts["dislikes_count"] is None else int(counts["dislikes_count"])
+        user_liked = user_action and user_action['likes'] == 1
+        user_disliked = user_action and user_action['dislikes'] == 1
+        
+    logging.debug("Value of user_liked for board_id %s: %s", board_id, user_liked)
 
-    return jsonify({"likes": likes_count, "dislikes": dislikes_count})
+    return jsonify({
+        "likes": likes_count, 
+        "dislikes": dislikes_count,
+        "user_liked": user_liked,
+        "user_disliked": user_disliked
+    })
 
 
 @app.route('/pythonlogin/add_comment', methods=['POST'])
@@ -1023,14 +1076,12 @@ def edit_comment():
     return jsonify(updated_comment)
 
 
-@app.route("/pythonlogin/like_comment", methods=["GET"])
+@app.route("/pythonlogin/like_comment", methods=['POST'])
 def like_comment():
-    comment_id = request.args.get("comment_id")
-    comment_like = request.args.get("comment_like", "false")  # default to "false" if "like" argument is not provided
+    comment_id = request.form.get("comment_id")
+    comment_like = request.form.get("comment_like", "false")
     comment_like = True if comment_like.lower() == 'true' else False
     user_id = session["user_id"]
-
-    print(f"comment_id: '{comment_id}'")
 
     if comment_id is None:
         return "Invalid request: comment_id is required", 400
@@ -1042,10 +1093,10 @@ def like_comment():
                 "SELECT * FROM tblcommentpostlikes WHERE user_id = %s AND comment_id = %s",
                 (user_id, comment_id)
             )
-            comment_existing_like = cursor.fetchone()
+            existing_like = cursor.fetchone()
 
-            if comment_existing_like:
-                if (comment_existing_like["comment_likes"] == 1 and comment_like) or (comment_existing_like["comment_dislikes"] == 1 and not comment_like):
+            if existing_like:
+                if (existing_like["comment_likes"] == 1 and comment_like) or (existing_like["comment_dislikes"] == 1 and not comment_like):
                     # Remove like/dislike if the same button is clicked again
                     cursor.execute(
                         "DELETE FROM tblcommentpostlikes WHERE user_id = %s AND comment_id = %s",
@@ -1058,28 +1109,38 @@ def like_comment():
                         (1 if comment_like else 0, 0 if comment_like else 1, user_id, comment_id)
                     )
             else:
-                print('interesting')
                 try:
                     cursor.execute(
                         "INSERT INTO tblcommentpostlikes (comment_id, user_id, comment_likes, comment_dislikes) VALUES (%s, %s, %s, %s)",
                         (comment_id, user_id, 1 if comment_like else 0, 0 if comment_like else 1)
                     )
-                    print("INSERT INTO tblcommentpostlikes (comment_id, user_id, comment_likes, comment_dislikes) VALUES (%s, %s, %s, %s)" % (comment_id, user_id, 1 if comment_like else 0, 0 if comment_like else 1))
                 except IntegrityError:
                     cursor.execute(
                         "UPDATE tblcommentpostlikes SET comment_likes = %s, comment_dislikes = %s WHERE user_id = %s AND comment_id = %s",
                         (1 if comment_like else 0, 0 if comment_like else 1, user_id, comment_id)
                     )
-            
+
             connection.commit()
 
             # Fetch the updated like and dislike counts for this comment
             cursor.execute("SELECT SUM(comment_likes) as comment_likes_count, SUM(comment_dislikes) as comment_dislikes_count FROM tblcommentpostlikes WHERE comment_id = %s", (comment_id,))
             counts = cursor.fetchone()
+
+            # Fetch user's action on this comment after the above operations
+            cursor.execute("SELECT comment_likes, comment_dislikes FROM tblcommentpostlikes WHERE user_id = %s AND comment_id = %s", (user_id, comment_id))
+            user_action = cursor.fetchone()
+
         comment_likes_count = 0 if counts["comment_likes_count"] is None else int(counts["comment_likes_count"])
         comment_dislikes_count = 0 if counts["comment_dislikes_count"] is None else int(counts["comment_dislikes_count"])
+        user_comment_liked = user_action and user_action['comment_likes'] == 1
+        user_comment_disliked = user_action and user_action['comment_dislikes'] == 1
 
-    return jsonify({"comment_likes": comment_likes_count, "comment_dislikes": comment_dislikes_count})
+    return jsonify({
+        "comment_likes": comment_likes_count,
+        "comment_dislikes": comment_dislikes_count,
+        "user_comment_liked": user_comment_liked,
+        "user_comment_disliked": user_comment_disliked
+    })
 
 
 if __name__ == '__main__':
@@ -1089,4 +1150,4 @@ if __name__ == '__main__':
         PORT = int(os.environ.get('SERVER_PORT', '5555'))
     except ValueError:
         PORT = 5555
-    app.run(HOST, PORT,debug=False)
+    app.run(HOST, PORT,debug=True)

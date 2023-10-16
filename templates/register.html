@@ -71,12 +71,27 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("password").addEventListener("focus", function() {
-            document.getElementById("show_hide_password").style.display = "inline-block";
-        });
+        var passwordField = document.getElementById("password");
+        var showHideBtn = document.getElementById("show_hide_password");
         
-        document.getElementById("password").addEventListener("input", function() {
-            document.getElementById("show_hide_password").style.display = "inline-block";
+        passwordField.addEventListener("focus", function() {
+            if (passwordField.value) {
+                showHideBtn.style.display = "inline-block";
+            }
+        });
+    
+        passwordField.addEventListener("input", function() {
+            if (passwordField.value) {
+                showHideBtn.style.display = "inline-block";
+            } else {
+                showHideBtn.style.display = "none";
+            }
+        });
+    
+        passwordField.addEventListener("blur", function() {
+            if (!passwordField.value) {
+                showHideBtn.style.display = "none";
+            }
         });
     });  
 
