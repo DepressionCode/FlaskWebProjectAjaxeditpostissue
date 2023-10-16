@@ -253,7 +253,9 @@
                                         <!-- Edit Comment Form -->
                                         <form action="{{ url_for('edit_comment') }}" method="POST">
                                             <input type="hidden" name="comment_id" value="{{ comment['comment_id'] }}">
-                                            <button type="submit" class="edit-comment-btn btn-primary comment-edit" data-comment-id="{{ comment['comment_id'] }}"><i class="fa fa-edit"></i></button>
+                                            <button type="button" class="edit-comment-btn btn-primary comment-edit" data-comment-id="{{ comment['comment_id'] }}"><i class="fa fa-edit"></i></button>
+                                            <button type="button" class="save-edit-comment-btn btn-primary" style="display:none;"><i class="fa fa-save"></i></button>
+                                            <button type="button" class="cancel-edit-comment-btn btn-secondary" style="display:none;"><i class="fa fa-times"></i></button>
                                         </form>
                         
                                         <!-- Delete Comment Form -->
@@ -432,39 +434,41 @@ function submitEditForm(boardId) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    const posts = document.querySelectorAll(".edit-form");
     
-    const posts = document.querySelectorAll("form.edit-form[data-board-id]");
-    posts.forEach((postContainer) => {
-        const boardId = postContainer.getAttribute("data-board-id");
+    posts.forEach((form) => {
+        const boardId = form.getAttribute("data-board-id");
 
         const titleInput = document.getElementById("edit-title-" + boardId);
         const bragInput = document.getElementById("edit-brag-" + boardId);
         const imageInput = document.getElementById("edit-image-" + boardId);
+        const submitButton = form.querySelector(".btn-submit");
 
-        if(!titleInput || !bragInput || !imageInput) {
-            console.log("One of the input elements is missing for boardId:", boardId);
-            return; // Skip this iteration if any of the inputs are missing
+        if (!titleInput || !bragInput || !imageInput || !submitButton) {
+            console.error("One or more elements are missing for boardId:", boardId);
+            return; // Skip this iteration if any elements are missing
         }
 
         const originalTitle = titleInput.value;
         const originalBrag = bragInput.value;
 
         function checkChanges() {
-            const titleChanged = titleInput.value !== originalTitle;
-            const bragChanged = bragInput.value !== originalBrag;
-            const imageChanged = imageInput.files && imageInput.files.length > 0;
+            const hasTitleChanged = titleInput.value.trim() !== originalTitle.trim();
+            const hasBragChanged = bragInput.value.trim() !== originalBrag.trim();
+            const hasImageChanged = imageInput.files && imageInput.files.length > 0;
 
-            console.log("titleChanged:", titleChanged, "bragChanged:", bragChanged, "imageChanged:", imageChanged); // Debugging
+            const isTitleEmpty = titleInput.value.trim() === "";
+            const isBragEmpty = bragInput.value.trim() === "";
 
-            const submitButton = postContainer.querySelector(".btn-submit");
-
-            if (titleChanged || bragChanged || imageChanged) {
-                console.log(submitButton)
-                submitButton?.removeAttribute("disabled");
+            if ((hasTitleChanged || hasBragChanged || hasImageChanged) && !isTitleEmpty && !isBragEmpty) {
+                submitButton.removeAttribute("disabled");
             } else {
-                submitButton?.setAttribute("disabled", "true");
+                submitButton.setAttribute("disabled", "true");
             }
         }
+
+        // Check changes initially to set the correct button state
+        checkChanges();
 
         titleInput.addEventListener("input", checkChanges);
         bragInput.addEventListener("input", checkChanges);
@@ -898,39 +902,53 @@ function handleDeleteComment(event) {
     }
 };
 
-document.querySelectorAll(".edit-comment-btn").forEach(function (button) {
-    button.addEventListener("click", handleEditComment);
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Initial disabling of all save buttons on load
+    document.querySelectorAll(".save-edit-comment-btn").forEach(function (btn) {
+        btn.disabled = true;
+    });
 });
 
-function handleEditComment(event) {
-    
-    event.preventDefault();
+document.querySelector('body').addEventListener("click", function(event) {
 
-    const commentElement = event.target.closest(".comment");
-    const commentContentElement = commentElement.querySelectorAll("p")[1];
+    // Edit Comment Button
+    if (event.target.matches('.edit-comment-btn')) {
+        const commentElement = event.target.closest(".comment");
+        const commentContentElement = commentElement.querySelector("p:nth-child(2)");
+        const originalComment = commentContentElement.innerText;
 
-    const iconElement = event.target.querySelector('i'); // Get the icon element within the button
+        commentContentElement.setAttribute('data-original-comment', originalComment);
+        commentContentElement.innerHTML = `<input type="text" class="edit-comment-input" value="${originalComment}">`;
+        
+        const saveBtn = commentElement.querySelector('.save-edit-comment-btn');
+        saveBtn.disabled = originalComment.trim() === commentContentElement.querySelector(".edit-comment-input").value.trim() || !commentContentElement.querySelector(".edit-comment-input").value.trim();
 
-    if (iconElement.classList.contains("fa-edit")) {
-        // Switch to edit mode
-        iconElement.classList.remove('fa-edit');
-        iconElement.classList.add('fa-save');
+        event.target.style.display = 'none';  // Hide edit button
+        saveBtn.style.display = 'block'; // Show save button
+        commentElement.querySelector('.cancel-edit-comment-btn').style.display = 'block'; // Show cancel button
+    }
 
-        var commentText = commentContentElement.innerText;
-        commentContentElement.innerHTML = `<input type="text" class="edit-comment-input" value="${commentText}">`;
-    } else {
-        // Save changes
-        iconElement.classList.remove('fa-save');
-        iconElement.classList.add('fa-edit');
+    // Cancel Edit Button
+    else if (event.target.matches('.cancel-edit-comment-btn')) {
+        const commentElement = event.target.closest(".comment");
+        const commentContentElement = commentElement.querySelector("p:nth-child(2)");
+        const originalComment = commentContentElement.getAttribute('data-original-comment');
 
-        var newComment = commentElement.querySelector(".edit-comment-input").value;
-        commentContentElement.innerText = newComment;
+        commentContentElement.innerText = originalComment;
+        event.target.style.display = 'none';  // Hide cancel button
+        commentElement.querySelector('.edit-comment-btn').style.display = 'block';  // Show edit button
+        commentElement.querySelector('.save-edit-comment-btn').style.display = 'none';  // Hide save button
+    }
 
-        var commentId = commentElement.getAttribute("data-comment-id");
-        console.log(commentId)
+    // Save Edit Button
+    else if (event.target.matches('.save-edit-comment-btn')) {
+        const commentElement = event.target.closest(".comment");
+        const commentContentElement = commentElement.querySelector("p:nth-child(2)");
+        const newComment = commentElement.querySelector(".edit-comment-input").value;
 
-        var formData = new FormData();
-        formData.append('comment_id', commentId);
+        const formData = new FormData();
+        formData.append('comment_id', commentElement.getAttribute("data-comment-id"));
         formData.append('new_comment', newComment);
 
         $.ajax({
@@ -941,9 +959,14 @@ function handleEditComment(event) {
             processData: false,
             success: function (response) {
                 console.log(response);
-                const dateParagraph = commentElement.querySelectorAll("p")[0];
+                const dateParagraph = commentElement.querySelector("p:first-child");
                 dateParagraph.innerHTML = `<strong>${response.user_id}</strong> 
                     <em> Posted ${response.comment_date}, Edited ${response.comment_date_edited}</em>`;
+                commentContentElement.innerText = newComment;
+
+                if (editBtn) editBtn.style.display = 'block'; // Show edit button again
+                saveBtn.style.display = 'none'; // Hide save button
+                if (cancelBtn) cancelBtn.style.display = 'none'; // Hide cancel button
             },
             error: function (xhr, status, error) {
                 console.error("Error:", error);
@@ -951,7 +974,19 @@ function handleEditComment(event) {
             }
         });
     }
-}
+});
+
+// Event listener for input changes in edit mode
+document.querySelector('body').addEventListener("input", function(event) {
+    if (event.target.matches('.edit-comment-input')) {
+        const commentElement = event.target.closest(".comment");
+        const originalComment = commentElement.querySelector("p:nth-child(2)").getAttribute('data-original-comment');
+        const saveBtn = commentElement.querySelector('.save-edit-comment-btn');
+        
+        // Logic to enable or disable the save button
+        saveBtn.disabled = originalComment.trim() === event.target.value.trim() || !event.target.value.trim();
+    }
+});
 
 
 document.addEventListener('DOMContentLoaded', function() {
